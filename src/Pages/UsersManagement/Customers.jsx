@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   Eye,
@@ -91,13 +92,17 @@ export default function Customers() {
   ];
 
   return (
-    <div className="space-y-6 p-4 lg:p-6">
+    <div className="space-y-6 p-4 lg:p-6 bg-gray-100 min-h-screen">
       {/* Top Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((card, index) => (
-          <div
+          <motion.div
             key={index}
-            className="rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+            whileHover={{ y: -5 }}
+            className="rounded-3xl bg-white p-5 shadow-sm hover:shadow-lg transition-all"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -108,14 +113,19 @@ export default function Customers() {
                 </h2>
               </div>
 
-              <div className={`rounded-xl p-4 ${card.bg}`}>{card.icon}</div>
+              <div className={`rounded-2xl p-4 ${card.bg}`}>{card.icon}</div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="rounded-3xl bg-white p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
@@ -140,10 +150,15 @@ export default function Customers() {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Desktop Table */}
-      <div className="hidden overflow-hidden rounded-2xl bg-white shadow-sm lg:block">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="hidden overflow-hidden rounded-3xl bg-white shadow-sm lg:block"
+      >
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1000px]">
             <thead className="bg-gray-100">
@@ -169,9 +184,15 @@ export default function Customers() {
             </thead>
 
             <tbody>
-              {filteredCustomers.map((item) => (
-                <tr
+              {filteredCustomers.map((item, index) => (
+                <motion.tr
                   key={item.id}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.1,
+                  }}
                   className="border-b transition hover:bg-gray-50"
                 >
                   {/* Customer */}
@@ -225,30 +246,52 @@ export default function Customers() {
                   {/* Actions */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <button className="rounded-lg bg-blue-100 p-2 transition hover:bg-blue-200">
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="rounded-xl bg-blue-100 p-2 transition hover:bg-blue-200"
+                      >
                         <Eye size={16} className="text-blue-600" />
-                      </button>
+                      </motion.button>
 
-                      <button className="rounded-lg bg-green-100 p-2 transition hover:bg-green-200">
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="rounded-xl bg-green-100 p-2 transition hover:bg-green-200"
+                      >
                         <Pencil size={16} className="text-green-600" />
-                      </button>
+                      </motion.button>
 
-                      <button className="rounded-lg bg-red-100 p-2 transition hover:bg-red-200">
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="rounded-xl bg-red-100 p-2 transition hover:bg-red-200"
+                      >
                         <Trash2 size={16} className="text-red-600" />
-                      </button>
+                      </motion.button>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile Cards */}
       <div className="grid gap-4 lg:hidden">
-        {filteredCustomers.map((item) => (
-          <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
+        {filteredCustomers.map((item, index) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.1,
+            }}
+            whileHover={{ y: -3 }}
+            className="rounded-3xl bg-white p-4 shadow-sm"
+          >
             {/* Top */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -278,46 +321,62 @@ export default function Customers() {
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-gray-500">Phone</p>
+
                 <h4 className="font-medium text-gray-800">{item.phone}</h4>
               </div>
 
               <div>
                 <p className="text-gray-500">City</p>
+
                 <h4 className="font-medium text-gray-800">{item.city}</h4>
               </div>
 
               <div>
                 <p className="text-gray-500">Bookings</p>
+
                 <h4 className="font-medium text-gray-800">{item.bookings}</h4>
               </div>
 
               <div>
                 <p className="text-gray-500">Join Date</p>
+
                 <h4 className="font-medium text-gray-800">{item.joinDate}</h4>
               </div>
             </div>
 
             {/* Actions */}
             <div className="mt-4 flex items-center gap-2">
-              <button className="flex-1 rounded-xl bg-blue-100 py-2 transition hover:bg-blue-200">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-blue-100 py-2 transition hover:bg-blue-200"
+              >
                 <div className="flex items-center justify-center gap-2 text-blue-600">
                   <Eye size={16} />
                 </div>
-              </button>
+              </motion.button>
 
-              <button className="flex-1 rounded-xl bg-green-100 py-2 transition hover:bg-green-200">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-green-100 py-2 transition hover:bg-green-200"
+              >
                 <div className="flex items-center justify-center gap-2 text-green-600">
                   <Pencil size={16} />
                 </div>
-              </button>
+              </motion.button>
 
-              <button className="flex-1 rounded-xl bg-red-100 py-2 transition hover:bg-red-200">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-red-100 py-2 transition hover:bg-red-200"
+              >
                 <div className="flex items-center justify-center gap-2 text-red-600">
                   <Trash2 size={16} />
                 </div>
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

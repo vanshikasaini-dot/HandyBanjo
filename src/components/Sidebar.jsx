@@ -38,8 +38,8 @@ export default function Sidebar({ close }) {
         { name: "Plumbing", path: "/dashboard/services/plumbing" },
         { name: "Kitchen Service", path: "/dashboard/services/kitchen" },
         { name: "Electrician", path: "/dashboard/services/electrician" },
-        { name: "Deep Cleaning", path: "/dashboard/services/deep-cleaning" },
-        { name: "Add/Edit Services", path: "/dashboard/services/manage" },
+        // { name: "Deep Cleaning", path: "/dashboard/services/deep-cleaning" },
+        // { name: "Add/Edit Services", path: "/dashboard/services/manage" },
         { name: "Service Pricing", path: "/dashboard/services/pricing" },
       ],
     },
@@ -47,11 +47,7 @@ export default function Sidebar({ close }) {
     {
       title: "Booking Management",
       children: [
-        { name: "All Bookings", path: "/dashboard/bookings/all" },
-        { name: "Pending Bookings", path: "/dashboard/bookings/pending" },
-        { name: "Ongoing Jobs", path: "/dashboard/bookings/ongoing" },
-        { name: "Completed Jobs", path: "/dashboard/bookings/completed" },
-        { name: "Cancelled Jobs", path: "/dashboard/bookings/cancelled" },
+        { name: "All Bookings", path: "/dashboard/bookings/allbookings" },
         { name: "Reschedule Requests", path: "/dashboard/bookings/reschedule" },
       ],
     },
@@ -116,7 +112,9 @@ export default function Sidebar({ close }) {
       </button>
 
       {/* Logo */}
-      <h1 className="text-2xl font-bold mb-8">Admin Panel</h1>
+      <h1 className="text-2xl font-bold mb-8">
+        Handy <span className="text-red-500">Banjo</span>
+      </h1>
 
       {/* Menu */}
       <div className="space-y-2">
@@ -143,7 +141,7 @@ export default function Sidebar({ close }) {
                   {/* Parent Menu */}
                   <button
                     onClick={() => toggleMenu(menu.title)}
-                    className={`w-full flex items-center justify-between rounded-lg p-3 transition-all duration-200 ${
+                    className={`w-full flex items-center justify-between rounded-lg p-3 whitespace-nowrap transition-all duration-200 ${
                       parentActive
                         ? "bg-red-500 text-black"
                         : "hover:bg-slate-700"

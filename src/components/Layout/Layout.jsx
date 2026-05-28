@@ -7,7 +7,7 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="bg-gray-100">
       {/* Overlay */}
       {sidebarOpen && (
         <div
@@ -16,30 +16,33 @@ export default function Layout() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block fixed top-0 left-0 z-50 h-screen w-[250px]">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Sidebar */}
       <div
         className={`
-          fixed top-0 right-0 z-50 h-screen
-          w-[250px]
-          transition-transform duration-300
+          fixed top-0 right-0 z-50 h-screen w-[250px]
+          transition-transform duration-300 lg:hidden
           ${sidebarOpen ? "translate-x-0" : "translate-x-full"}
-          lg:translate-x-0 lg:left-0
         `}
       >
         <Sidebar close={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Main */}
-      <div className="flex-1 lg:ml-[250px]">
+      {/* Main Content */}
+      <div className="lg:ml-[250px] min-h-screen">
         {/* Header */}
-        <div className="fixed top-0 left-0 right-0 lg:left-[250px] z-30">
+        <div className="fixed top-0 left-0 right-0 lg:left-[250px] z-30 bg-white">
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         </div>
 
         {/* Page Content */}
-        <div className="pt-[90px] p-5">
+        <main className="pt-[90px] p-5 overflow-y-auto">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );

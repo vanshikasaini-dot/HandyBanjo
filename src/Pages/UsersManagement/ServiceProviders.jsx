@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   Eye,
@@ -108,25 +109,43 @@ export default function ServiceProviders() {
       {/* Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card, index) => (
-          <div
+          <motion.div
             key={index}
-            className="rounded-2xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{
+              scale: 1.04,
+              y: -5,
+            }}
+            className="rounded-3xl bg-white p-5 shadow-sm transition-all duration-300"
           >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">{card.title}</p>
-                <h2 className="mt-2 text-2xl font-bold text-gray-800">
+                <h2 className="mt-2 text-3xl font-bold text-gray-800">
                   {card.value}
                 </h2>
               </div>
-              <div className={`rounded-2xl p-3 ${card.bg}`}>{card.icon}</div>
+
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                className={`rounded-2xl p-4 ${card.bg}`}
+              >
+                {card.icon}
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
@@ -142,19 +161,25 @@ export default function ServiceProviders() {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
             />
+
             <input
               type="text"
               placeholder="Search service providers..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none focus:border-blue-500"
+              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Desktop Table */}
-      <div className="hidden overflow-hidden rounded-3xl bg-white shadow-sm xl:block">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="hidden overflow-hidden rounded-3xl bg-white shadow-sm xl:block"
+      >
         <table className="w-full table-fixed">
           <thead className="bg-gray-100">
             <tr>
@@ -178,15 +203,26 @@ export default function ServiceProviders() {
           </thead>
 
           <tbody>
-            {filteredProviders.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50 transition">
+            {filteredProviders.map((item, index) => (
+              <motion.tr
+                key={item.id}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{
+                  backgroundColor: "#f9fafb",
+                }}
+                className="transition-all duration-300"
+              >
                 {/* Provider */}
                 <td className="px-4 py-5">
                   <div className="flex items-center gap-3">
-                    <img
+                    <motion.img
+                      whileHover={{ scale: 1.08 }}
                       src={item.image}
                       className="h-12 w-12 rounded-2xl object-cover"
                     />
+
                     <div>
                       <h3 className="text-sm font-semibold">{item.name}</h3>
                       <p className="text-xs text-gray-500">{item.email}</p>
@@ -220,45 +256,65 @@ export default function ServiceProviders() {
                 {/* Actions */}
                 <td className="px-4 py-5">
                   <div className="flex gap-2">
-                    <button className="h-10 w-10 rounded-xl bg-blue-50 hover:bg-blue-200">
-                      <Eye size={16} className="text-blue-600" />
-                    </button>
-
-                    <button className="h-10 w-10 rounded-xl bg-green-50 hover:bg-green-200">
-                      <Pencil size={16} className="text-green-600" />
-                    </button>
-
-                    <button className="h-10 w-10 rounded-xl bg-emerald-50 hover:bg-emerald-200">
-                      <CheckCircle size={16} className="text-emerald-600" />
-                    </button>
-
-                    <button className="h-10 w-10 rounded-xl bg-yellow-50 hover:bg-yellow-200">
-                      <XCircle size={16} className="text-yellow-600" />
-                    </button>
-
-                    <button className="h-10 w-10 rounded-xl bg-red-50 hover:bg-red-200">
-                      <Trash2 size={16} className="text-red-600" />
-                    </button>
+                    {[
+                      {
+                        icon: <Eye size={16} className="text-blue-600" />,
+                        bg: "bg-blue-50 hover:bg-blue-200",
+                      },
+                      {
+                        icon: <Pencil size={16} className="text-green-600" />,
+                        bg: "bg-green-50 hover:bg-green-200",
+                      },
+                      {
+                        icon: (
+                          <CheckCircle size={16} className="text-emerald-600" />
+                        ),
+                        bg: "bg-emerald-50 hover:bg-emerald-200",
+                      },
+                      {
+                        icon: <XCircle size={16} className="text-yellow-600" />,
+                        bg: "bg-yellow-50 hover:bg-yellow-200",
+                      },
+                      {
+                        icon: <Trash2 size={16} className="text-red-600" />,
+                        bg: "bg-red-50 hover:bg-red-200",
+                      },
+                    ].map((btn, i) => (
+                      <motion.button
+                        key={i}
+                        whileHover={{ scale: 1.12, rotate: 3 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`h-10 w-10 rounded-xl transition-all duration-300 ${btn.bg}`}
+                      >
+                        {btn.icon}
+                      </motion.button>
+                    ))}
                   </div>
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </motion.div>
 
       {/* Mobile Cards */}
       <div className="grid gap-5 xl:hidden">
-        {filteredProviders.map((item) => (
-          <div
+        {filteredProviders.map((item, index) => (
+          <motion.div
             key={item.id}
-            className="rounded-3xl border bg-white p-5 shadow-sm"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.02 }}
+            className="rounded-3xl border bg-white p-5 shadow-sm transition-all duration-300"
           >
             <div className="flex items-center gap-3">
-              <img
+              <motion.img
+                whileHover={{ rotate: 3, scale: 1.05 }}
                 src={item.image}
                 className="h-14 w-14 rounded-2xl object-cover"
               />
+
               <div>
                 <h3 className="font-semibold">{item.name}</h3>
                 <p className="text-sm text-gray-500">{item.category}</p>
@@ -280,23 +336,39 @@ export default function ServiceProviders() {
             </div>
 
             <div className="mt-4 flex gap-2">
-              <button className="h-10 w-10 rounded-xl bg-blue-50 hover:bg-blue-200">
-                <Eye size={16} className="text-blue-600" />
-              </button>
-              <button className="h-10 w-10 rounded-xl bg-green-50 hover:bg-green-200">
-                <Pencil size={16} className="text-green-600" />
-              </button>
-              <button className="h-10 w-10 rounded-xl bg-emerald-50 hover:bg-emerald-200">
-                <CheckCircle size={16} className="text-emerald-600" />
-              </button>
-              <button className="h-10 w-10 rounded-xl bg-yellow-50 hover:bg-yellow-200">
-                <XCircle size={16} className="text-yellow-600" />
-              </button>
-              <button className="h-10 w-10 rounded-xl bg-red-50 hover:bg-red-200">
-                <Trash2 size={16} className="text-red-600" />
-              </button>
+              {[
+                {
+                  icon: <Eye size={16} className="text-blue-600" />,
+                  bg: "bg-blue-50 hover:bg-blue-200",
+                },
+                {
+                  icon: <Pencil size={16} className="text-green-600" />,
+                  bg: "bg-green-50 hover:bg-green-200",
+                },
+                {
+                  icon: <CheckCircle size={16} className="text-emerald-600" />,
+                  bg: "bg-emerald-50 hover:bg-emerald-200",
+                },
+                {
+                  icon: <XCircle size={16} className="text-yellow-600" />,
+                  bg: "bg-yellow-50 hover:bg-yellow-200",
+                },
+                {
+                  icon: <Trash2 size={16} className="text-red-600" />,
+                  bg: "bg-red-50 hover:bg-red-200",
+                },
+              ].map((btn, i) => (
+                <motion.button
+                  key={i}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`h-10 w-10 rounded-xl transition-all duration-300 ${btn.bg}`}
+                >
+                  {btn.icon}
+                </motion.button>
+              ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

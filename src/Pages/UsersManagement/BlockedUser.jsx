@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   ShieldX,
@@ -68,69 +69,80 @@ export default function BlockedUsers() {
     user.name.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const cards = [
+    {
+      title: "Total Blocked Users",
+      value: "240",
+      icon: <ShieldX size={28} />,
+      bg: "bg-red-100",
+      color: "text-red-600",
+    },
+    {
+      title: "Blocked Customers",
+      value: "120",
+      icon: <Users size={28} />,
+      bg: "bg-orange-100",
+      color: "text-orange-600",
+    },
+    {
+      title: "Blocked Providers",
+      value: "65",
+      icon: <Ban size={28} />,
+      bg: "bg-yellow-100",
+      color: "text-yellow-600",
+    },
+    {
+      title: "Blocked Workers",
+      value: "55",
+      icon: <UserX size={28} />,
+      bg: "bg-purple-100",
+      color: "text-purple-600",
+    },
+  ];
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-100 p-4 sm:p-6">
       {/* Top Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Blocked Users</p>
+        {cards.map((card, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{
+              scale: 1.03,
+              y: -5,
+            }}
+            className="rounded-3xl bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">{card.title}</p>
 
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">240</h2>
+                <h2 className="mt-2 text-3xl font-bold text-gray-800">
+                  {card.value}
+                </h2>
+              </div>
+
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                className={`rounded-2xl p-4 ${card.bg} ${card.color}`}
+              >
+                {card.icon}
+              </motion.div>
             </div>
-
-            <div className="rounded-2xl bg-red-100 p-4 text-red-600">
-              <ShieldX size={28} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Blocked Customers</p>
-
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">120</h2>
-            </div>
-
-            <div className="rounded-2xl bg-orange-100 p-4 text-orange-600">
-              <Users size={28} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Blocked Providers</p>
-
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">65</h2>
-            </div>
-
-            <div className="rounded-2xl bg-yellow-100 p-4 text-yellow-600">
-              <Ban size={28} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Blocked Workers</p>
-
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">55</h2>
-            </div>
-
-            <div className="rounded-2xl bg-purple-100 p-4 text-purple-600">
-              <UserX size={28} />
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        ))}
       </div>
 
       {/* Header */}
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Blocked Users</h1>
@@ -146,62 +158,64 @@ export default function BlockedUsers() {
               size={18}
             />
 
-            <input
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
               type="text"
               placeholder="Search user..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all focus:border-red-500"
+              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-red-500 focus:ring-2 focus:ring-red-100"
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Desktop Table */}
-      <div className="mt-6 hidden overflow-hidden rounded-3xl bg-white shadow-sm xl:block">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mt-6 hidden overflow-hidden rounded-3xl bg-white shadow-sm xl:block"
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  User
-                </th>
-
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  Contact
-                </th>
-
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  Role
-                </th>
-
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  Reason
-                </th>
-
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  Blocked Date
-                </th>
-
-                <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                  Status
-                </th>
-
-                <th className="px-5 py-4 text-center text-sm font-semibold text-gray-600">
-                  Actions
-                </th>
+                {[
+                  "User",
+                  "Contact",
+                  "Role",
+                  "Reason",
+                  "Blocked Date",
+                  "Status",
+                  "Actions",
+                ].map((item, index) => (
+                  <th
+                    key={index}
+                    className="px-5 py-4 text-left text-sm font-semibold text-gray-600"
+                  >
+                    {item}
+                  </th>
+                ))}
               </tr>
             </thead>
 
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr
+              {filteredUsers.map((user, index) => (
+                <motion.tr
                   key={user.id}
-                  className="border-t border-gray-100 hover:bg-gray-50"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{
+                    backgroundColor: "#f9fafb",
+                  }}
+                  className="border-t border-gray-100 transition-all duration-300"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <img
+                      <motion.img
+                        whileHover={{ scale: 1.08, rotate: 2 }}
                         src={user.image}
                         alt={user.name}
                         className="h-14 w-14 rounded-2xl object-cover"
@@ -249,43 +263,63 @@ export default function BlockedUsers() {
                   </td>
 
                   <td className="px-5 py-4">
-                    <span className="rounded-full bg-red-100 px-4 py-1 text-sm font-medium text-red-600">
+                    <motion.span
+                      whileHover={{ scale: 1.05 }}
+                      className="rounded-full bg-red-100 px-4 py-1 text-sm font-medium text-red-600"
+                    >
                       {user.status}
-                    </span>
+                    </motion.span>
                   </td>
 
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="rounded-xl bg-blue-100 p-2 text-blue-600 transition hover:scale-105">
-                        <Eye size={18} />
-                      </button>
-
-                      <button className="rounded-xl bg-green-100 p-2 text-green-600 transition hover:scale-105">
-                        <RotateCcw size={18} />
-                      </button>
-
-                      <button className="rounded-xl bg-red-100 p-2 text-red-600 transition hover:scale-105">
-                        <Trash2 size={18} />
-                      </button>
+                      {[
+                        {
+                          icon: <Eye size={18} />,
+                          bg: "bg-blue-100 text-blue-600",
+                        },
+                        {
+                          icon: <RotateCcw size={18} />,
+                          bg: "bg-green-100 text-green-600",
+                        },
+                        {
+                          icon: <Trash2 size={18} />,
+                          bg: "bg-red-100 text-red-600",
+                        },
+                      ].map((btn, i) => (
+                        <motion.button
+                          key={i}
+                          whileHover={{ scale: 1.12, rotate: 3 }}
+                          whileTap={{ scale: 0.9 }}
+                          className={`rounded-xl p-2 transition-all duration-300 ${btn.bg}`}
+                        >
+                          {btn.icon}
+                        </motion.button>
+                      ))}
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile Cards */}
       <div className="mt-6 grid grid-cols-1 gap-5 xl:hidden">
-        {filteredUsers.map((user) => (
-          <div
+        {filteredUsers.map((user, index) => (
+          <motion.div
             key={user.id}
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.02 }}
             className="overflow-hidden rounded-3xl bg-white p-5 shadow-sm"
           >
             <div className="flex min-w-0 items-start justify-between gap-3">
               <div className="flex min-w-0 gap-3">
-                <img
+                <motion.img
+                  whileHover={{ scale: 1.05, rotate: 2 }}
                   src={user.image}
                   alt={user.name}
                   className="h-16 w-16 rounded-2xl object-cover"
@@ -304,9 +338,12 @@ export default function BlockedUsers() {
                 </div>
               </div>
 
-              <button className="shrink-0 rounded-xl bg-gray-100 p-2 text-gray-600">
+              <motion.button
+                whileHover={{ rotate: 90 }}
+                className="shrink-0 rounded-xl bg-gray-100 p-2 text-gray-600"
+              >
                 <MoreVertical size={18} />
-              </button>
+              </motion.button>
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -344,27 +381,35 @@ export default function BlockedUsers() {
             </div>
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {user.blockedDate}
-                </span>
-              </div>
+              <span className="text-sm text-gray-600">{user.blockedDate}</span>
 
               <div className="flex items-center gap-2">
-                <button className="rounded-xl bg-blue-100 p-2 text-blue-600 transition hover:scale-105">
-                  <Eye size={18} />
-                </button>
-
-                <button className="rounded-xl bg-green-100 p-2 text-green-600 transition hover:scale-105">
-                  <RotateCcw size={18} />
-                </button>
-
-                <button className="rounded-xl bg-red-100 p-2 text-red-600 transition hover:scale-105">
-                  <Trash2 size={18} />
-                </button>
+                {[
+                  {
+                    icon: <Eye size={18} />,
+                    bg: "bg-blue-100 text-blue-600",
+                  },
+                  {
+                    icon: <RotateCcw size={18} />,
+                    bg: "bg-green-100 text-green-600",
+                  },
+                  {
+                    icon: <Trash2 size={18} />,
+                    bg: "bg-red-100 text-red-600",
+                  },
+                ].map((btn, i) => (
+                  <motion.button
+                    key={i}
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`rounded-xl p-2 transition-all duration-300 ${btn.bg}`}
+                  >
+                    {btn.icon}
+                  </motion.button>
+                ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

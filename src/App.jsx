@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 import SplashScreen from "./components/SplashScreen/SplashScreen";
-import Login from "./Pages/Home/Home";
+import Login from "./Pages/Login/LoginPage";
 import Layout from "./components/Layout/Layout";
 
 import Dashboard from "./Pages/Dashboard";
@@ -20,6 +20,8 @@ import Electrician from "./Pages/ServiceManagement/Electrician";
 import AddServices from "./Pages/ServiceManagement/AddServices";
 import DeepCleaning from "./Pages/ServiceManagement/DeepCleaning";
 import ServicePricing from "./Pages/ServiceManagement/ServicePricing";
+import AllBookings from "./Pages/BookingManagement/AllBookings";
+import RescheduleRequest from ".//Pages/BookingManagement/RescheduleRequest";
 export default function App() {
   return (
     <Routes>
@@ -49,6 +51,12 @@ export default function App() {
           <Route path="deep-cleaning" element={<DeepCleaning />} />
           <Route path="manage" element={<AddServices />} />
           <Route path="pricing" element={<ServicePricing />} />
+        </Route>
+
+        {/* BOOKING MANAGEMENT */}
+        <Route path="bookings">
+          <Route path="allbookings" element={<AllBookings />} />
+          <Route path="reschedule" element={<RescheduleRequest />} />
         </Route>
       </Route>
     </Routes>

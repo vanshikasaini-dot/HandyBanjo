@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   ShieldCheck,
@@ -84,47 +85,87 @@ export default function VerificationRequests() {
         return "bg-purple-100 text-purple-600";
       case "Customer":
         return "bg-blue-100 text-blue-600";
-      case "Provider":
-        return "bg-indigo-100 text-indigo-600";
       default:
         return "bg-gray-100 text-gray-600";
     }
   };
 
+  const cards = [
+    {
+      title: "Total Requests",
+      value: "240",
+      icon: <ShieldCheck size={28} />,
+      bg: "bg-blue-100",
+      color: "text-blue-600",
+    },
+    {
+      title: "Pending",
+      value: "80",
+      icon: <Clock3 size={28} />,
+      bg: "bg-orange-100",
+      color: "text-orange-600",
+    },
+    {
+      title: "Verified",
+      value: "120",
+      icon: <BadgeCheck size={28} />,
+      bg: "bg-green-100",
+      color: "text-green-600",
+    },
+    {
+      title: "Rejected",
+      value: "40",
+      icon: <XCircle size={28} />,
+      bg: "bg-red-100",
+      color: "text-red-600",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       {/* Top Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card
-          title="Total Requests"
-          value="240"
-          icon={<ShieldCheck className="text-blue-600" size={28} />}
-        />
-        <Card
-          title="Pending"
-          value="80"
-          icon={<Clock3 className="text-orange-600" size={28} />}
-        />
-        <Card
-          title="Verified"
-          value="120"
-          icon={<BadgeCheck className="text-green-600" size={28} />}
-        />
-        <Card
-          title="Rejected"
-          value="40"
-          icon={<XCircle className="text-red-600" size={28} />}
-        />
+        {cards.map((card, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{
+              scale: 1.03,
+              y: -5,
+            }}
+            className="rounded-3xl bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">{card.title}</p>
+                <h2 className="mt-2 text-3xl font-bold">{card.value}</h2>
+              </div>
+
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                className={`rounded-2xl p-4 ${card.bg} ${card.color}`}
+              >
+                {card.icon}
+              </motion.div>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
       {/* Header */}
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Verification Requests
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold">Verification Requests</h1>
+
+            <p className="text-sm text-gray-500">
               Manage worker verification requests
             </p>
           </div>
@@ -134,134 +175,190 @@ export default function VerificationRequests() {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
             />
-            <input
-              type="text"
+
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
+              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border bg-gray-50 pl-11 pr-4 outline-none focus:border-blue-500"
             />
           </div>
         </div>
+      </motion.div>
+
+      {/* ================= MOBILE VIEW ================= */}
+      <div className="mt-6 grid gap-4 xl:hidden">
+        {filteredRequests.map((r, index) => (
+          <motion.div
+            key={r.id}
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.02 }}
+            className="rounded-2xl bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-center gap-3">
+              <motion.img
+                whileHover={{ scale: 1.08, rotate: 2 }}
+                src={r.image}
+                className="h-12 w-12 rounded-xl object-cover"
+              />
+
+              <div>
+                <p className="font-semibold">{r.name}</p>
+                <p className="text-xs text-gray-500">{r.skill}</p>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2 text-sm">
+              <span className={`rounded-full px-2 py-1 ${roleStyle(r.role)}`}>
+                {r.role}
+              </span>
+
+              <span
+                className={`rounded-full px-2 py-1 ${statusStyle(r.status)}`}
+              >
+                {r.status}
+              </span>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+              <Phone size={14} /> {r.phone}
+            </div>
+
+            <div className="mt-3 flex justify-end gap-2">
+              {[
+                {
+                  icon: <Eye size={16} />,
+                  bg: "bg-blue-100 text-blue-600",
+                },
+                {
+                  icon: <Check size={16} />,
+                  bg: "bg-green-100 text-green-600",
+                },
+                {
+                  icon: <X size={16} />,
+                  bg: "bg-red-100 text-red-600",
+                },
+              ].map((btn, i) => (
+                <motion.button
+                  key={i}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`rounded-lg p-2 transition-all duration-300 ${btn.bg}`}
+                >
+                  {btn.icon}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Table */}
-      <div className="mt-6 hidden rounded-3xl bg-white shadow-sm xl:block overflow-hidden">
-        <table className="w-full">
+      {/* ================= DESKTOP TABLE ================= */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mt-6 hidden overflow-x-auto rounded-3xl bg-white shadow-sm xl:block"
+      >
+        <table className="w-full min-w-[900px]">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                User
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Role
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Contact
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Skill
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Docs
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Date
-              </th>
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-600">
-                Status
-              </th>
-              <th className="px-5 py-4 text-center text-sm font-semibold text-gray-600">
-                Actions
-              </th>
+              <th className="p-4 text-left">User</th>
+              <th>Role</th>
+              <th>Contact</th>
+              <th>Skill</th>
+              <th>Docs</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th className="text-center">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredRequests.map((r) => (
-              <tr key={r.id} className="border-t hover:bg-gray-50">
-                {/* USER */}
-                <td className="px-5 py-4 flex items-center gap-3">
-                  <img
-                    src={r.image}
-                    className="h-12 w-12 rounded-2xl object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold">{r.name}</p>
+            {filteredRequests.map((r, index) => (
+              <motion.tr
+                key={r.id}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{
+                  backgroundColor: "#f9fafb",
+                }}
+                className="border-t transition-all duration-300"
+              >
+                <td className="p-4">
+                  <div className="flex items-center gap-3">
+                    <motion.img
+                      whileHover={{ scale: 1.08, rotate: 2 }}
+                      src={r.image}
+                      className="h-10 w-10 rounded-xl object-cover"
+                    />
+
+                    <span>{r.name}</span>
                   </div>
                 </td>
 
-                {/* ROLE */}
-                <td className="px-5 py-4">
+                <td>
                   <span
-                    className={`px-3 py-1 rounded-full text-sm ${roleStyle(r.role)}`}
+                    className={`rounded-full px-3 py-1 ${roleStyle(r.role)}`}
                   >
                     {r.role}
                   </span>
                 </td>
 
-                {/* CONTACT */}
-                <td className="px-5 py-4 text-sm flex items-center gap-2">
-                  <Phone size={14} />
-                  {r.phone}
+                <td>
+                  <div className="flex items-center gap-2">
+                    <Phone size={14} /> {r.phone}
+                  </div>
                 </td>
 
-                {/* SKILL */}
-                <td className="px-5 py-4">
-                  <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">
-                    {r.skill}
-                  </span>
-                </td>
+                <td>{r.skill}</td>
+                <td>{r.documents}</td>
+                <td>{r.date}</td>
 
-                {/* DOCS */}
-                <td className="px-5 py-4">{r.documents}</td>
-
-                {/* DATE */}
-                <td className="px-5 py-4 text-sm text-gray-600">{r.date}</td>
-
-                {/* STATUS */}
-                <td className="px-5 py-4">
+                <td>
                   <span
-                    className={`px-3 py-1 rounded-full text-sm ${statusStyle(r.status)}`}
+                    className={`rounded-full px-3 py-1 ${statusStyle(r.status)}`}
                   >
                     {r.status}
                   </span>
                 </td>
 
-                {/* ACTIONS */}
-                <td className="px-5 py-4">
+                <td>
                   <div className="flex justify-center gap-2">
-                    <button className="p-2 rounded-lg bg-blue-100 text-blue-600">
-                      <Eye size={16} />
-                    </button>
-                    <button className="p-2 rounded-lg bg-green-100 text-green-600">
-                      <Check size={16} />
-                    </button>
-                    <button className="p-2 rounded-lg bg-red-100 text-red-600">
-                      <X size={16} />
-                    </button>
+                    {[
+                      {
+                        icon: <Eye size={16} />,
+                        bg: "bg-blue-100 text-blue-600",
+                      },
+                      {
+                        icon: <Check size={16} />,
+                        bg: "bg-green-100 text-green-600",
+                      },
+                      {
+                        icon: <X size={16} />,
+                        bg: "bg-red-100 text-red-600",
+                      },
+                    ].map((btn, i) => (
+                      <motion.button
+                        key={i}
+                        whileHover={{ scale: 1.12, rotate: 3 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`rounded-lg p-2 transition-all duration-300 ${btn.bg}`}
+                      >
+                        {btn.icon}
+                      </motion.button>
+                    ))}
                   </div>
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
-}
-
-/* Small reusable card */
-function Card({ title, value, icon }) {
-  return (
-    <div className="rounded-3xl bg-white p-5 shadow-sm">
-      <div className="flex justify-between items-center">
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <h2 className="mt-2 text-3xl font-bold text-gray-800">{value}</h2>
-        </div>
-        {icon}
-      </div>
+      </motion.div>
     </div>
   );
 }

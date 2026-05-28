@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   Eye,
@@ -77,61 +78,74 @@ export default function HelperWorkers() {
     <div className="min-h-screen overflow-x-hidden bg-gray-100 p-4 sm:p-6">
       {/* Top Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Workers</p>
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">240</h2>
-            </div>
+        {[
+          {
+            title: "Total Workers",
+            value: "240",
+            icon: <Users size={28} />,
+            bg: "bg-blue-100",
+            color: "text-blue-600",
+          },
+          {
+            title: "Active Workers",
+            value: "180",
+            icon: <UserCheck size={28} />,
+            bg: "bg-green-100",
+            color: "text-green-600",
+          },
+          {
+            title: "Inactive Workers",
+            value: "32",
+            icon: <UserX size={28} />,
+            bg: "bg-red-100",
+            color: "text-red-600",
+          },
+          {
+            title: "Total Jobs",
+            value: "430",
+            icon: <Briefcase size={28} />,
+            bg: "bg-purple-100",
+            color: "text-purple-600",
+          },
+        ].map((card, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{
+              scale: 1.03,
+              y: -5,
+            }}
+            className="rounded-3xl bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">{card.title}</p>
 
-            <div className="rounded-2xl bg-blue-100 p-4 text-blue-600">
-              <Users size={28} />
-            </div>
-          </div>
-        </div>
+                <h2 className="mt-2 text-3xl font-bold text-gray-800">
+                  {card.value}
+                </h2>
+              </div>
 
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Active Workers</p>
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">180</h2>
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                className={`rounded-2xl p-4 ${card.bg} ${card.color}`}
+              >
+                {card.icon}
+              </motion.div>
             </div>
-
-            <div className="rounded-2xl bg-green-100 p-4 text-green-600">
-              <UserCheck size={28} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Inactive Workers</p>
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">32</h2>
-            </div>
-
-            <div className="rounded-2xl bg-red-100 p-4 text-red-600">
-              <UserX size={28} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Jobs</p>
-              <h2 className="mt-2 text-3xl font-bold text-gray-800">430</h2>
-            </div>
-
-            <div className="rounded-2xl bg-purple-100 p-4 text-purple-600">
-              <Briefcase size={28} />
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        ))}
       </div>
 
       {/* Header */}
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Helper Workers</h1>
@@ -148,66 +162,65 @@ export default function HelperWorkers() {
               size={18}
             />
 
-            <input
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
               type="text"
               placeholder="Search worker..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all focus:border-blue-500"
+              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Desktop Table */}
-      <div className="mt-6 hidden w-full overflow-hidden rounded-3xl bg-white shadow-sm xl:block">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mt-6 hidden w-full overflow-hidden rounded-3xl bg-white shadow-sm xl:block"
+      >
         <div className="w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Worker
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Contact
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  City
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Skill
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Jobs
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Rating
-                </th>
-
-                <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">
-                  Status
-                </th>
-
-                <th className="px-4 py-4 text-center text-sm font-semibold text-gray-600">
-                  Actions
-                </th>
+                {[
+                  "Worker",
+                  "Contact",
+                  "City",
+                  "Skill",
+                  "Jobs",
+                  "Rating",
+                  "Status",
+                  "Actions",
+                ].map((item, index) => (
+                  <th
+                    key={index}
+                    className="px-4 py-4 text-left text-sm font-semibold text-gray-600"
+                  >
+                    {item}
+                  </th>
+                ))}
               </tr>
             </thead>
 
             <tbody>
-              {filteredWorkers.map((worker) => (
-                <tr
+              {filteredWorkers.map((worker, index) => (
+                <motion.tr
                   key={worker.id}
-                  className="border-t border-gray-100 transition hover:bg-gray-50"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{
+                    backgroundColor: "#f9fafb",
+                  }}
+                  className="border-t border-gray-100 transition-all duration-300"
                 >
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      <img
+                      <motion.img
+                        whileHover={{ scale: 1.08, rotate: 2 }}
                         src={worker.image}
                         alt={worker.name}
                         className="h-12 w-12 rounded-2xl object-cover"
@@ -228,7 +241,7 @@ export default function HelperWorkers() {
                         {worker.phone}
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm text-gray-600 break-all">
+                      <div className="flex items-center gap-2 break-all text-sm text-gray-600">
                         <Mail size={15} />
                         {worker.email}
                       </div>
@@ -254,7 +267,15 @@ export default function HelperWorkers() {
 
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-1 text-yellow-500">
-                      <Star size={16} fill="currentColor" />
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                        }}
+                      >
+                        <Star size={16} fill="currentColor" />
+                      </motion.div>
 
                       <span className="font-medium text-gray-700">
                         {worker.rating}
@@ -278,36 +299,53 @@ export default function HelperWorkers() {
 
                   <td className="px-4 py-4">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="rounded-xl bg-blue-100 p-2 text-blue-600 transition hover:scale-105">
-                        <Eye size={18} />
-                      </button>
-
-                      <button className="rounded-xl bg-green-100 p-2 text-green-600 transition hover:scale-105">
-                        <Pencil size={18} />
-                      </button>
-
-                      <button className="rounded-xl bg-red-100 p-2 text-red-600 transition hover:scale-105">
-                        <Trash2 size={18} />
-                      </button>
+                      {[
+                        {
+                          icon: <Eye size={18} />,
+                          bg: "bg-blue-100 text-blue-600",
+                        },
+                        {
+                          icon: <Pencil size={18} />,
+                          bg: "bg-green-100 text-green-600",
+                        },
+                        {
+                          icon: <Trash2 size={18} />,
+                          bg: "bg-red-100 text-red-600",
+                        },
+                      ].map((btn, i) => (
+                        <motion.button
+                          key={i}
+                          whileHover={{ scale: 1.12, rotate: 3 }}
+                          whileTap={{ scale: 0.9 }}
+                          className={`rounded-xl p-2 transition-all duration-300 ${btn.bg}`}
+                        >
+                          {btn.icon}
+                        </motion.button>
+                      ))}
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile Cards */}
       <div className="mt-6 grid grid-cols-1 gap-5 xl:hidden">
-        {filteredWorkers.map((worker) => (
-          <div
+        {filteredWorkers.map((worker, index) => (
+          <motion.div
             key={worker.id}
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.02 }}
             className="overflow-hidden rounded-3xl bg-white p-5 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 gap-4">
-                <img
+                <motion.img
+                  whileHover={{ scale: 1.05, rotate: 2 }}
                   src={worker.image}
                   alt={worker.name}
                   className="h-16 w-16 rounded-2xl object-cover"
@@ -330,9 +368,12 @@ export default function HelperWorkers() {
                 </div>
               </div>
 
-              <button className="shrink-0 rounded-xl bg-gray-100 p-2 text-gray-600">
+              <motion.button
+                whileHover={{ rotate: 90 }}
+                className="shrink-0 rounded-xl bg-gray-100 p-2 text-gray-600"
+              >
                 <MoreVertical size={18} />
-              </button>
+              </motion.button>
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -378,19 +419,31 @@ export default function HelperWorkers() {
             </div>
 
             <div className="mt-5 grid grid-cols-3 gap-2">
-              <button className="flex items-center justify-center rounded-2xl bg-blue-100 py-3 text-blue-600">
-                <Eye size={18} />
-              </button>
-
-              <button className="flex items-center justify-center rounded-2xl bg-green-100 py-3 text-green-600">
-                <Pencil size={18} />
-              </button>
-
-              <button className="flex items-center justify-center rounded-2xl bg-red-100 py-3 text-red-600">
-                <Trash2 size={18} />
-              </button>
+              {[
+                {
+                  icon: <Eye size={18} />,
+                  bg: "bg-blue-100 text-blue-600",
+                },
+                {
+                  icon: <Pencil size={18} />,
+                  bg: "bg-green-100 text-green-600",
+                },
+                {
+                  icon: <Trash2 size={18} />,
+                  bg: "bg-red-100 text-red-600",
+                },
+              ].map((btn, i) => (
+                <motion.button
+                  key={i}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`flex items-center justify-center rounded-2xl py-3 transition-all duration-300 ${btn.bg}`}
+                >
+                  {btn.icon}
+                </motion.button>
+              ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
