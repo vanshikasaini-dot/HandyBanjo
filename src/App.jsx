@@ -2,7 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 import SplashScreen from "./components/SplashScreen/SplashScreen";
-import Login from "./Pages/Login/LoginPage";
+import Login from "./Pages/Home/LoginPage";
+import Signup from "./Pages/Home/SignUpPage"
 import Layout from "./components/Layout/Layout";
 
 import Dashboard from "./Pages/Dashboard";
@@ -22,12 +23,21 @@ import DeepCleaning from "./Pages/ServiceManagement/DeepCleaning";
 import ServicePricing from "./Pages/ServiceManagement/ServicePricing";
 import AllBookings from "./Pages/BookingManagement/AllBookings";
 import RescheduleRequest from ".//Pages/BookingManagement/RescheduleRequest";
+import AllPayments from "./Pages/Payments/AllPayments";
+import AdminRoles from "./Pages/Settings/AdminRole";
+import Permissions from "./Pages/Settings/Permissions";
+import AppSettings from "./Pages/Settings/AppSettings";
+import AllTechnicians from "./Pages/TechnicianManagement/AllTechnican";
+import Documents from "./Pages/TechnicianManagement/Documents";
+import AvailblityStatus from "./Pages/TechnicianManagement/AvailabilityStatus";
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<SplashScreen />} />
 
+      <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      
 
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Dashboard />} />
@@ -57,6 +67,25 @@ export default function App() {
         <Route path="bookings">
           <Route path="allbookings" element={<AllBookings />} />
           <Route path="reschedule" element={<RescheduleRequest />} />
+        </Route>
+
+        {/* TECHNICIANS */}
+        <Route path="technicians">
+          <Route path="alltechnicians" element={<AllTechnicians />} />
+            <Route path="availability" element={<AvailblityStatus />} />
+            <Route path="documents" element={<Documents />} />
+        </Route>
+
+        {/* PAYMENTS */}
+        <Route path="payments">
+          <Route path="payments" element={<AllPayments />} />
+        </Route>
+
+        {/* SETTINGS */}
+        <Route path="settings">
+          <Route path="Adminrole" element={<AdminRoles />} />
+          <Route path="permissions" element={<Permissions />} />
+          <Route path="app" element={<AppSettings />} />
         </Route>
       </Route>
     </Routes>

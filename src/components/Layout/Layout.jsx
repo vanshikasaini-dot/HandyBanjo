@@ -17,14 +17,14 @@ export default function Layout() {
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block fixed top-0 left-0 z-50 h-screen w-[250px]">
+      <div className="hidden lg:block fixed top-0 left-0 z-50 h-screen w-[280px]">
         <Sidebar />
       </div>
 
       {/* Mobile Sidebar */}
       <div
         className={`
-          fixed top-0 right-0 z-50 h-screen w-[250px]
+          fixed top-0 right-0 z-50 h-screen w-[280px]
           transition-transform duration-300 lg:hidden
           ${sidebarOpen ? "translate-x-0" : "translate-x-full"}
         `}
@@ -33,10 +33,13 @@ export default function Layout() {
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-[250px] min-h-screen">
+      <div className="lg:ml-[280px] min-h-screen">
         {/* Header */}
-        <div className="fixed top-0 left-0 right-0 lg:left-[250px] z-30 bg-white">
-          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="fixed top-0 left-0 right-0 lg:left-[280px] z-30 bg-white">
+          <Header
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
         </div>
 
         {/* Page Content */}

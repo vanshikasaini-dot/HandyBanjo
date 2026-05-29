@@ -1,6 +1,30 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, X } from "lucide-react";
+
+import {
+  ChevronDown,
+  X,
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Wrench,
+  CalendarDays,
+  BadgeCheck,
+  Wallet,
+  Settings,
+  User,
+  ShieldCheck,
+  Ban,
+  FileCheck,
+  AirVent,
+  Pipette,
+  CookingPot,
+  Zap,
+  IndianRupee,
+  ClipboardList,
+  RefreshCcw,
+  Briefcase,
+} from "lucide-react";
 
 export default function Sidebar({ close }) {
   const location = useLocation();
@@ -11,77 +35,148 @@ export default function Sidebar({ close }) {
     {
       title: "Dashboard",
       path: "/dashboard",
+      icon: <LayoutDashboard size={18} />,
     },
 
     {
       title: "User Management",
+      icon: <Users size={18} />,
       children: [
-        { name: "Customers", path: "/dashboard/users/customers" },
+        {
+          name: "Customers",
+          path: "/dashboard/users/customers",
+          icon: <User size={16} />,
+        },
         {
           name: "Service Providers",
           path: "/dashboard/users/service-providers",
+          icon: <UserCheck size={16} />,
         },
-        { name: "Helpers/Workers", path: "/dashboard/users/helpers" },
-        { name: "Enterprise Clients", path: "/dashboard/users/enterprise" },
-        { name: "Blocked Users", path: "/dashboard/users/blocked" },
+        {
+          name: "Helpers/Workers",
+          path: "/dashboard/users/helpers",
+          icon: <Briefcase size={16} />,
+        },
+        {
+          name: "Enterprise Clients",
+          path: "/dashboard/users/enterprise",
+          icon: <Users size={16} />,
+        },
+        {
+          name: "Blocked Users",
+          path: "/dashboard/users/blocked",
+          icon: <Ban size={16} />,
+        },
         {
           name: "Verification Requests",
           path: "/dashboard/users/verification",
+          icon: <ShieldCheck size={16} />,
         },
       ],
     },
 
     {
       title: "Service Management",
+      icon: <Wrench size={18} />,
       children: [
-        { name: "AC Service", path: "/dashboard/services/ac" },
-        { name: "Plumbing", path: "/dashboard/services/plumbing" },
-        { name: "Kitchen Service", path: "/dashboard/services/kitchen" },
-        { name: "Electrician", path: "/dashboard/services/electrician" },
-        // { name: "Deep Cleaning", path: "/dashboard/services/deep-cleaning" },
-        // { name: "Add/Edit Services", path: "/dashboard/services/manage" },
-        { name: "Service Pricing", path: "/dashboard/services/pricing" },
+        {
+          name: "AC Service",
+          path: "/dashboard/services/ac",
+          icon: <AirVent size={16} />,
+        },
+        {
+          name: "Plumbing",
+          path: "/dashboard/services/plumbing",
+          icon: <Pipette size={16} />,
+        },
+        {
+          name: "Kitchen Service",
+          path: "/dashboard/services/kitchen",
+          icon: <CookingPot size={16} />,
+        },
+        {
+          name: "Electrician",
+          path: "/dashboard/services/electrician",
+          icon: <Zap size={16} />,
+        },
+        {
+          name: "Service Pricing",
+          path: "/dashboard/services/pricing",
+          icon: <IndianRupee size={16} />,
+        },
       ],
     },
 
     {
       title: "Booking Management",
+      icon: <CalendarDays size={18} />,
       children: [
-        { name: "All Bookings", path: "/dashboard/bookings/allbookings" },
-        { name: "Reschedule Requests", path: "/dashboard/bookings/reschedule" },
+        {
+          name: "All Bookings",
+          path: "/dashboard/bookings/allbookings",
+          icon: <ClipboardList size={16} />,
+        },
+        {
+          name: "Reschedule Requests",
+          path: "/dashboard/bookings/reschedule",
+          icon: <RefreshCcw size={16} />,
+        },
       ],
     },
 
     {
       title: "Technician Management",
+      icon: <BadgeCheck size={18} />,
       children: [
-        { name: "All Technicians", path: "/dashboard/tech/all" },
-        { name: "Availability Status", path: "/dashboard/tech/availability" },
-        { name: "Assigned Jobs", path: "/dashboard/tech/assigned" },
-        { name: "Ratings & Reviews", path: "/dashboard/tech/reviews" },
-        { name: "Earnings", path: "/dashboard/tech/earnings" },
-        { name: "Documents Verification", path: "/dashboard/tech/documents" },
+        {
+          name: "All Technicians",
+          path: "/dashboard/technicians/alltechnicians",
+          icon: <Users size={16} />,
+        },
+        {
+          name: "Availability Status",
+          path: "/dashboard/technicians/availability",
+          icon: <BadgeCheck size={16} />,
+        },
+        {
+          name: "Documents Verification",
+          path: "/dashboard/technicians/documents",
+          icon: <FileCheck size={16} />,
+        },
       ],
     },
 
     {
       title: "Payments & Wallet",
+      icon: <Wallet size={18} />,
       children: [
-        { name: "Transactions", path: "/dashboard/payments/transactions" },
-        { name: "Customer Payments", path: "/dashboard/payments/customers" },
-        { name: "Technician Payouts", path: "/dashboard/payments/payouts" },
-        { name: "Wallet Management", path: "/dashboard/payments/wallet" },
-        { name: "Refund Requests", path: "/dashboard/payments/refunds" },
-        { name: "Coupons & Discounts", path: "/dashboard/payments/coupons" },
+        {
+          name: "All Payments",
+          path: "/dashboard/payments/payments",
+          icon: <IndianRupee size={16} />,
+        },
       ],
     },
 
     {
       title: "Settings",
+      icon: <Settings size={18} />,
       children: [
-        { name: "Admin Roles", path: "/dashboard/settings/roles" },
-        { name: "Permissions", path: "/dashboard/settings/permissions" },
-        { name: "App Settings", path: "/dashboard/settings/app" },
+        {
+          name: "Admin Roles",
+          path: "/dashboard/settings/Adminrole",
+          icon: <Users size={16} />,
+        },
+        {
+          name: "Permissions",
+          path: "/dashboard/settings/permissions",
+          icon: <ShieldCheck size={16} />,
+        },
+        {
+          name: "App Settings",
+          path: "/dashboard/settings/app",
+          icon: <Settings size={16} />,
+        },
       ],
     },
   ];
@@ -100,7 +195,7 @@ export default function Sidebar({ close }) {
 
   return (
     <aside
-      className="w-[260px] h-screen overflow-y-auto p-5 text-white relative"
+      className="w-[280px] h-screen overflow-y-auto p-5 text-white relative"
       style={{
         background:
           "linear-gradient(rgb(15,23,42), rgb(30,41,59), rgb(59,7,100))",
@@ -113,7 +208,7 @@ export default function Sidebar({ close }) {
 
       {/* Logo */}
       <h1 className="text-2xl font-bold mb-8">
-        Handy <span className="text-red-500">Banjo</span>
+        <span className="text-red-500">Handy</span> Banjo
       </h1>
 
       {/* Menu */}
@@ -128,12 +223,13 @@ export default function Sidebar({ close }) {
                 <Link
                   to={menu.path}
                   onClick={close}
-                  className={`flex items-center rounded-lg p-3 transition-all duration-200 ${
+                  className={`flex items-center gap-3 whitespace-nowrap rounded-lg p-3 transition-all duration-200 ${
                     isActive(menu.path)
                       ? "bg-red-500 text-black"
                       : "hover:bg-slate-700"
                   }`}
                 >
+                  {menu.icon}
                   {menu.title}
                 </Link>
               ) : (
@@ -147,7 +243,10 @@ export default function Sidebar({ close }) {
                         : "hover:bg-slate-700"
                     }`}
                   >
-                    <span>{menu.title}</span>
+                    <div className="flex items-center gap-3">
+                      {menu.icon}
+                      <span>{menu.title}</span>
+                    </div>
 
                     <ChevronDown
                       size={18}
@@ -165,12 +264,13 @@ export default function Sidebar({ close }) {
                           key={i}
                           to={child.path}
                           onClick={close}
-                          className={`block rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
+                          className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
                             isActive(child.path)
                               ? "bg-white/10 border border-white/20 text-white"
                               : "text-gray-300 hover:bg-white/5"
                           }`}
                         >
+                          {child.icon}
                           {child.name}
                         </Link>
                       ))}

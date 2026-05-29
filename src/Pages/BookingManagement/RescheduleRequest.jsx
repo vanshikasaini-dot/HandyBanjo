@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   Search,
   CalendarDays,
@@ -7,7 +8,10 @@ import {
   Phone,
   CheckCircle,
   XCircle,
+  RefreshCcw,
 } from "lucide-react";
+
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function RescheduleRequests() {
   const [search, setSearch] = useState("");
@@ -106,18 +110,37 @@ export default function RescheduleRequests() {
   return (
     <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.5,
+        }}
+        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"
+      >
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             Reschedule Requests
           </h1>
+
           <p className="text-gray-500 mt-1">
             Manage all reschedule booking requests
           </p>
         </div>
 
         {/* Search */}
-        <div className="relative w-full lg:w-[320px]">
+        <motion.div
+          whileHover={{
+            scale: 1.02,
+          }}
+          className="relative w-full lg:w-[320px]"
+        >
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             size={18}
@@ -128,118 +151,244 @@ export default function RescheduleRequests() {
             placeholder="Search customer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-red-400"
+            className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-red-400 shadow-sm"
           />
-        </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
+        <motion.div
+          whileHover={{ y: -6 }}
+          className="bg-white rounded-3xl p-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Total Requests</p>
+
+              <h2 className="text-3xl font-bold mt-1">{requests.length}</h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+              <RefreshCcw size={28} className="text-red-500" />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ y: -6 }}
+          className="bg-white rounded-3xl p-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Approved</p>
+
+              <h2 className="text-3xl font-bold text-green-500 mt-1">
+                {requests.filter((item) => item.status === "Approved").length}
+              </h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle size={28} className="text-green-500" />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ y: -6 }}
+          className="bg-white rounded-3xl p-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Pending</p>
+
+              <h2 className="text-3xl font-bold text-yellow-500 mt-1">
+                {requests.filter((item) => item.status === "Pending").length}
+              </h2>
+            </div>
+
+            <div className="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center">
+              <Clock3 size={28} className="text-yellow-500" />
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {filteredRequests.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300"
-          >
-            {/* Top */}
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
-                  {item.customer}
-                </h2>
-                <p className="text-sm text-gray-500">{item.id}</p>
+        <AnimatePresence>
+          {filteredRequests.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{
+                opacity: 0,
+                y: 40,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.08,
+              }}
+              whileHover={{
+                y: -10,
+              }}
+              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
+            >
+              {/* Top */}
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-gray-800">
+                    {item.customer}
+                  </h2>
+
+                  <p className="text-sm text-gray-500">{item.id}</p>
+                </div>
+
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold
+                    ${
+                      item.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : item.status === "Approved"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                    }`}
+                >
+                  {item.status}
+                </span>
               </div>
 
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold
-                ${
-                  item.status === "Pending"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : item.status === "Approved"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                }`}
+              {/* Service */}
+              <motion.div
+                whileHover={{
+                  scale: 1.02,
+                }}
+                className="bg-gray-100 rounded-xl p-4 mb-4"
               >
-                {item.status}
-              </span>
-            </div>
+                <p className="text-sm text-gray-500 mb-1">Service</p>
 
-            {/* Service */}
-            <div className="bg-gray-100 rounded-xl p-4 mb-4">
-              <p className="text-sm text-gray-500 mb-1">Service</p>
-              <h3 className="font-semibold text-gray-800">{item.service}</h3>
-            </div>
+                <h3 className="font-semibold text-gray-800">{item.service}</h3>
+              </motion.div>
 
-            {/* Dates */}
-            <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={16} />
-                <span>
-                  Old Date:{" "}
-                  <span className="font-semibold">{item.oldDate}</span>
-                </span>
-              </div>
+              {/* Details */}
+              <div className="space-y-3 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <CalendarDays size={15} />
+                  </div>
 
-              <div className="flex items-center gap-2">
-                <CalendarDays size={16} />
-                <span>
-                  New Date:{" "}
-                  <span className="font-semibold text-green-600">
-                    {item.newDate}
+                  <span>
+                    Old Date:{" "}
+                    <span className="font-semibold">{item.oldDate}</span>
                   </span>
-                </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <CalendarDays size={15} />
+                  </div>
+
+                  <span>
+                    New Date:{" "}
+                    <span className="font-semibold text-green-600">
+                      {item.newDate}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <Clock3 size={15} />
+                  </div>
+
+                  <span>
+                    {item.oldTime} → {item.newTime}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <MapPin size={15} />
+                  </div>
+
+                  <span>{item.location}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <Phone size={15} />
+                  </div>
+
+                  <span>{item.phone}</span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Clock3 size={16} />
-                <span>
-                  {item.oldTime} → {item.newTime}
-                </span>
+              {/* Reason */}
+              <motion.div
+                whileHover={{
+                  scale: 1.01,
+                }}
+                className="mt-4 bg-red-50 border border-red-100 rounded-xl p-3"
+              >
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold text-red-500">Reason:</span>{" "}
+                  {item.reason}
+                </p>
+              </motion.div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 mt-5">
+                <motion.button
+                  whileHover={{
+                    scale: 1.03,
+                  }}
+                  whileTap={{
+                    scale: 0.95,
+                  }}
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all"
+                >
+                  <CheckCircle size={18} />
+                  Approve
+                </motion.button>
+
+                <motion.button
+                  whileHover={{
+                    scale: 1.03,
+                  }}
+                  whileTap={{
+                    scale: 0.95,
+                  }}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all"
+                >
+                  <XCircle size={18} />
+                  Reject
+                </motion.button>
               </div>
-
-              <div className="flex items-center gap-2">
-                <MapPin size={16} />
-                <span>{item.location}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Phone size={16} />
-                <span>{item.phone}</span>
-              </div>
-            </div>
-
-            {/* Reason */}
-            <div className="mt-4 bg-red-50 border border-red-100 rounded-xl p-3">
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold text-red-500">Reason:</span>{" "}
-                {item.reason}
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3 mt-5">
-              <button className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all">
-                <CheckCircle size={18} />
-                Approve
-              </button>
-
-              <button className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all">
-                <XCircle size={18} />
-                Reject
-              </button>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Empty State */}
       {filteredRequests.length === 0 && (
-        <div className="bg-white rounded-2xl p-10 text-center shadow-sm mt-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-white rounded-2xl p-10 text-center shadow-sm mt-6"
+        >
           <h2 className="text-xl font-bold text-gray-700 mb-2">
             No Requests Found
           </h2>
 
           <p className="text-gray-500">No reschedule requests available.</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );
