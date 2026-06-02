@@ -3,12 +3,12 @@ import "./App.css";
 
 import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Login from "./Pages/Home/LoginPage";
-import Signup from "./Pages/Home/SignUpPage"
 import Layout from "./components/Layout/Layout";
 
 import Dashboard from "./Pages/Dashboard";
 
 import Customers from "./Pages/UsersManagement/Customers";
+import Category from "./Pages/UsersManagement/Category";
 import ServiceProviders from "./Pages/UsersManagement/ServiceProviders";
 import HelperWorker from "./Pages/UsersManagement/HelperWorker";
 import EnterpriseClient from "./Pages/UsersManagement/EnterpriseClient";
@@ -30,20 +30,28 @@ import AppSettings from "./Pages/Settings/AppSettings";
 import AllTechnicians from "./Pages/TechnicianManagement/AllTechnican";
 import Documents from "./Pages/TechnicianManagement/Documents";
 import AvailblityStatus from "./Pages/TechnicianManagement/AvailabilityStatus";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<SplashScreen />} />
 
-      <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-      
 
-      <Route path="/dashboard" element={<Layout />}>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Dashboard />} />
         {/* SERVICES users */}
         <Route path="users">
           <Route path="customers" element={<Customers />} />
+          <Route path="category" element={<Category />} />
           <Route path="service-providers" element={<ServiceProviders />} />
           <Route path="helpers" element={<HelperWorker />} />
           <Route path="enterprise" element={<EnterpriseClient />} />
@@ -72,8 +80,8 @@ export default function App() {
         {/* TECHNICIANS */}
         <Route path="technicians">
           <Route path="alltechnicians" element={<AllTechnicians />} />
-            <Route path="availability" element={<AvailblityStatus />} />
-            <Route path="documents" element={<Documents />} />
+          <Route path="availability" element={<AvailblityStatus />} />
+          <Route path="documents" element={<Documents />} />
         </Route>
 
         {/* PAYMENTS */}

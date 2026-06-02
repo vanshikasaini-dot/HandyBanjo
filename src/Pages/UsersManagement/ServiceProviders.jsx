@@ -5,16 +5,18 @@ import {
   Eye,
   Pencil,
   Trash2,
-  CheckCircle,
-  XCircle,
   Users,
   UserCheck,
   Clock3,
   Ban,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-
 export default function ServiceProviders() {
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 5;
 
   const providers = [
     {
@@ -58,8 +60,19 @@ export default function ServiceProviders() {
     },
   ];
 
+  // Search Filter
   const filteredProviders = providers.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProviders.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const currentProviders = filteredProviders.slice(
+    startIndex,
+    startIndex + itemsPerPage,
   );
 
   const getStatusStyle = (status) => {
@@ -80,25 +93,25 @@ export default function ServiceProviders() {
   const cards = [
     {
       title: "Total Providers",
-      value: "250",
+      value: providers.length,
       icon: <Users className="text-blue-600" size={24} />,
       bg: "bg-blue-100",
     },
     {
       title: "Active Providers",
-      value: "180",
+      value: providers.filter((item) => item.status === "Active").length,
       icon: <UserCheck className="text-green-600" size={24} />,
       bg: "bg-green-100",
     },
     {
       title: "Pending Approval",
-      value: "40",
+      value: providers.filter((item) => item.status === "Pending").length,
       icon: <Clock3 className="text-yellow-600" size={24} />,
       bg: "bg-yellow-100",
     },
     {
       title: "Blocked Providers",
-      value: "30",
+      value: providers.filter((item) => item.status === "Blocked").length,
       icon: <Ban className="text-red-600" size={24} />,
       bg: "bg-red-100",
     },
@@ -106,146 +119,116 @@ export default function ServiceProviders() {
 
   return (
     <div className="space-y-6 overflow-hidden p-4 lg:p-6">
-      {/* Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((card, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            whileHover={{
-              scale: 1.04,
-              y: -5,
-            }}
-            className="rounded-3xl bg-white p-5 shadow-sm transition-all duration-300"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">{card.title}</p>
-                <h2 className="mt-2 text-3xl font-bold text-gray-800">
-                  {card.value}
-                </h2>
-              </div>
-
-              <motion.div
-                whileHover={{ rotate: 10, scale: 1.1 }}
-                className={`rounded-2xl p-4 ${card.bg}`}
-              >
-                {card.icon}
-              </motion.div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Search */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Service Providers
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage all service providers and their details from here
-            </p>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Service Providers Management
+          </h1>
 
-          <div className="relative w-full lg:w-[320px]">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-              size={18}
-            />
+          <p className="text-gray-500 mt-1">
+            Manage all service providers here.
+          </p>
+        </div>
 
-            <input
-              type="text"
-              placeholder="Search service providers..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
+        <button className="bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-2xl font-semibold cursor-pointer">
+          + Add Provider
+        </button>
+      </motion.div>
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        <motion.div
+          whileHover={{ y: -5 }}
+          className="bg-white rounded-3xl p-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-gray-500 text-sm">Total Providers</h2>
+              <h1 className="text-3xl font-bold mt-2">{providers.length}</h1>
+            </div>
+
+            <div className="bg-blue-100 p-3 rounded-2xl">
+              <Users className="text-blue-600" />
+            </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ y: -5 }}
+          className="bg-white rounded-3xl p-5 shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-gray-500 text-sm">Active Providers</h2>
+              <h1 className="text-3xl font-bold mt-2">
+                {providers.filter((item) => item.status === "Active").length}
+              </h1>
+            </div>
+
+            <div className="bg-green-100 p-3 rounded-2xl">
+              <UserCheck className="text-green-600" />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+      {/* Search Box */}
+      <motion.div className="bg-white rounded-3xl shadow-sm p-4 mb-6 flex flex-col lg:flex-row gap-4 lg:justify-between">
+        <div className="flex items-center gap-2 bg-gray-100 px-4 py-3 rounded-2xl w-full lg:w-[350px]">
+          <Search size={18} />
+
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="bg-transparent w-full outline-none"
+          />
         </div>
       </motion.div>
 
       {/* Desktop Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="hidden overflow-hidden rounded-3xl bg-white shadow-sm xl:block"
-      >
-        <table className="w-full table-fixed">
+      <div className="hidden lg:block bg-white rounded-3xl shadow-sm overflow-x-auto">
+        <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
-              {[
-                "Provider",
-                "Category",
-                "Phone",
-                "City",
-                "Bookings",
-                "Status",
-                "Actions",
-              ].map((heading, index) => (
-                <th
-                  key={index}
-                  className="px-4 py-5 text-left text-xs font-semibold uppercase text-gray-500"
-                >
-                  {heading}
-                </th>
-              ))}
+              <th className="px-6 py-4 text-left">Provider</th>
+              <th className="px-6 py-4 text-left">Category</th>
+              <th className="px-6 py-4 text-left">Phone</th>
+              <th className="px-6 py-4 text-left">City</th>
+              <th className="px-6 py-4 text-left">Status</th>
+              <th className="px-6 py-4 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredProviders.map((item, index) => (
-              <motion.tr
-                key={item.id}
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{
-                  backgroundColor: "#f9fafb",
-                }}
-                className="transition-all duration-300"
-              >
-                {/* Provider */}
-                <td className="px-4 py-5">
+            {currentProviders.map((item) => (
+              <tr key={item._id} className="border-t hover:bg-gray-50">
+                <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <motion.img
-                      whileHover={{ scale: 1.08 }}
+                    <img
                       src={item.image}
-                      className="h-12 w-12 rounded-2xl object-cover"
+                      className="w-12 h-12 rounded-xl object-cover"
                     />
 
                     <div>
-                      <h3 className="text-sm font-semibold">{item.name}</h3>
-                      <p className="text-xs text-gray-500">{item.email}</p>
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="text-sm text-gray-500">{item.email}</p>
                     </div>
                   </div>
                 </td>
 
-                {/* Category */}
-                <td className="px-4 py-5">
-                  <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs text-indigo-600">
-                    {item.category}
-                  </span>
-                </td>
+                <td className="px-6 py-4">{item.category}</td>
 
-                <td className="px-4 py-5 text-sm">{item.phone}</td>
+                <td className="px-6 py-4">{item.phone}</td>
 
-                <td className="px-4 py-5 text-sm">{item.city}</td>
+                <td className="px-6 py-4">{item.city}</td>
 
-                <td className="px-4 py-5 text-sm">{item.bookings}</td>
-
-                <td className="px-4 py-5">
+                <td className="px-6 py-4">
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(
                       item.status,
                     )}`}
                   >
@@ -253,123 +236,92 @@ export default function ServiceProviders() {
                   </span>
                 </td>
 
-                {/* Actions */}
-                <td className="px-4 py-5">
-                  <div className="flex gap-2">
-                    {[
-                      {
-                        icon: <Eye size={16} className="text-blue-600" />,
-                        bg: "bg-blue-50 hover:bg-blue-200",
-                      },
-                      {
-                        icon: <Pencil size={16} className="text-green-600" />,
-                        bg: "bg-green-50 hover:bg-green-200",
-                      },
-                      {
-                        icon: (
-                          <CheckCircle size={16} className="text-emerald-600" />
-                        ),
-                        bg: "bg-emerald-50 hover:bg-emerald-200",
-                      },
-                      {
-                        icon: <XCircle size={16} className="text-yellow-600" />,
-                        bg: "bg-yellow-50 hover:bg-yellow-200",
-                      },
-                      {
-                        icon: <Trash2 size={16} className="text-red-600" />,
-                        bg: "bg-red-50 hover:bg-red-200",
-                      },
-                    ].map((btn, i) => (
-                      <motion.button
-                        key={i}
-                        whileHover={{ scale: 1.12, rotate: 3 }}
-                        whileTap={{ scale: 0.9 }}
-                        className={`h-10 w-10 rounded-xl transition-all duration-300 ${btn.bg}`}
-                      >
-                        {btn.icon}
-                      </motion.button>
-                    ))}
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-2">
+                    <button className="bg-blue-100 p-2 rounded-xl cursor-pointer">
+                      <Eye size={18} className="text-blue-600" />
+                    </button>
+
+                    <button className="bg-green-100 p-2 rounded-xl cursor-pointer">
+                      <Pencil size={18} className="text-green-600" />
+                    </button>
+
+                    <button className="bg-red-100 p-2 rounded-xl cursor-pointer">
+                      <Trash2 size={18} className="text-red-600" />
+                    </button>
                   </div>
                 </td>
-              </motion.tr>
+              </tr>
             ))}
           </tbody>
         </table>
-      </motion.div>
+      </div>
 
-      {/* Mobile Cards */}
-      <div className="grid gap-5 xl:hidden">
-        {filteredProviders.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.02 }}
-            className="rounded-3xl border bg-white p-5 shadow-sm transition-all duration-300"
-          >
-            <div className="flex items-center gap-3">
-              <motion.img
-                whileHover={{ rotate: 3, scale: 1.05 }}
+      {/* Mobile Card */}
+      <div className="grid grid-cols-1 gap-4 lg:hidden mt-4">
+        {currentProviders.map((item) => (
+          <div key={item._id} className="bg-white rounded-3xl shadow-sm p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img
                 src={item.image}
-                className="h-14 w-14 rounded-2xl object-cover"
+                className="w-14 h-14 rounded-xl object-cover"
               />
 
               <div>
                 <h3 className="font-semibold">{item.name}</h3>
                 <p className="text-sm text-gray-500">{item.category}</p>
+                <p className="text-sm text-gray-500">{item.phone}</p>
               </div>
-
-              <span
-                className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                  item.status,
-                )}`}
-              >
-                {item.status}
-              </span>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <div>Phone: {item.phone}</div>
-              <div>City: {item.city}</div>
-              <div>Bookings: {item.bookings}</div>
-            </div>
+            <div className="flex justify-end gap-2">
+              <button className="bg-blue-100 p-2 rounded-xl cursor-pointer">
+                <Eye size={18} className="text-blue-600" />
+              </button>
 
-            <div className="mt-4 flex gap-2">
-              {[
-                {
-                  icon: <Eye size={16} className="text-blue-600" />,
-                  bg: "bg-blue-50 hover:bg-blue-200",
-                },
-                {
-                  icon: <Pencil size={16} className="text-green-600" />,
-                  bg: "bg-green-50 hover:bg-green-200",
-                },
-                {
-                  icon: <CheckCircle size={16} className="text-emerald-600" />,
-                  bg: "bg-emerald-50 hover:bg-emerald-200",
-                },
-                {
-                  icon: <XCircle size={16} className="text-yellow-600" />,
-                  bg: "bg-yellow-50 hover:bg-yellow-200",
-                },
-                {
-                  icon: <Trash2 size={16} className="text-red-600" />,
-                  bg: "bg-red-50 hover:bg-red-200",
-                },
-              ].map((btn, i) => (
-                <motion.button
-                  key={i}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`h-10 w-10 rounded-xl transition-all duration-300 ${btn.bg}`}
-                >
-                  {btn.icon}
-                </motion.button>
-              ))}
+              <button className="bg-green-100 p-2 rounded-xl cursor-pointer">
+                <Pencil size={18} className="text-green-600" />
+              </button>
+
+              <button className="bg-red-100 p-2 rounded-xl">
+                <Trash2 size={18} className="text-red-600" />
+              </button>
             </div>
-          </motion.div>
+          </div>
         ))}
+      </div>
+      <div className="mt-6 flex items-center justify-end gap-3 pr-[30px]">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`h-10 w-10 rounded-xl border font-semibold transition-all duration-200 cursor-pointer ${
+              currentPage === index + 1
+                ? "border-red-600 bg-red-500/30 text-red-700 shadow-md scale-105"
+                : "border-red-500 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:scale-105"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronRight size={18} />
+        </button>
       </div>
     </div>
   );

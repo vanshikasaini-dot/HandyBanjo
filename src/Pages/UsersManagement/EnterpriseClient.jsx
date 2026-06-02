@@ -1,5 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getAllEnterprises,
+  getEnterpriseById,
+  deleteEnterprise,
+  updateEnterprise,
+} from "../../Apis/Interprise";
 import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  EnterpriseViewModal,
+  DeleteEnterpriseModal,
+  UpdateEnterpriseModal,
+} from "../../components/Model/EnterpriseModal";
+
 import {
   Search,
   Building2,
@@ -17,112 +30,136 @@ import {
 
 export default function Enterprises() {
   const [search, setSearch] = useState("");
+  const [enterprises, setEnterprises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const totalEnterprises = enterprises.length;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEnterprise, setSelectedEnterprise] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedEnterpriseEdit, setSelectedEnterpriseEdit] = useState(null);
 
-  const enterprises = [
-    {
-      id: 1,
-      company: "Taj Hotel",
-      owner: "Rahul Sharma",
-      phone: "9876543210",
-      email: "tajhotel@gmail.com",
-      city: "Delhi",
-      employees: 25,
-      bookings: 120,
-      revenue: "₹45,000",
-      status: "Active",
-      logo: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
-    },
+  const itemsPerPage = 5;
 
-    {
-      id: 2,
-      company: "ABC Office",
-      owner: "Amit Kumar",
-      phone: "9876543211",
-      email: "abcoffice@gmail.com",
-      city: "Noida",
-      employees: 15,
-      bookings: 80,
-      revenue: "₹28,000",
-      status: "Inactive",
-      logo: "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
-    },
+  const activeEnterprises = enterprises.length;
+  const profileCreated = enterprises.filter(
+    (item) => item.enterpriseProfile,
+  ).length;
 
-    {
-      id: 3,
-      company: "Green Mall",
-      owner: "Vikas Singh",
-      phone: "9876543212",
-      email: "greenmall@gmail.com",
-      city: "Mumbai",
-      employees: 40,
-      bookings: 210,
-      revenue: "₹75,000",
-      status: "Active",
-      logo: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-    },
+  const profilePending = enterprises.filter(
+    (item) => !item.enterpriseProfile,
+  ).length;
 
-    {
-      id: 4,
-      company: "City Hospital",
-      owner: "Rohit Verma",
-      phone: "9876543213",
-      email: "hospital@gmail.com",
-      city: "Jaipur",
-      employees: 30,
-      bookings: 140,
-      revenue: "₹52,000",
-      status: "Pending",
-      logo: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d",
-    },
-  ];
+  useEffect(() => {
+    fetchEnterprises();
+  }, []);
 
-  const filteredEnterprises = enterprises.filter((enterprise) =>
-    enterprise.company.toLowerCase().includes(search.toLowerCase()),
-  );
+  const fetchEnterprises = async () => {
+    try {
+      const data = await getAllEnterprises();
+
+      console.log("API Response =>", data);
+
+      setEnterprises(data?.data || []);
+    } catch (error) {
+      console.log("Error fetching enterprises:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = async (id) => {
+    try {
+      const response = await getEnterpriseById(id);
+
+      setSelectedEnterprise(response.data);
+
+      setIsModalOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteEnterprise(selectedDeleteId);
+
+      setEnterprises((prev) =>
+        prev.filter((item) => item._id !== selectedDeleteId),
+      );
+
+      setDeleteModalOpen(false);
+      setSelectedDeleteId(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdate = async (formData) => {
+    try {
+      await updateEnterprise(selectedEnterpriseEdit._id, formData);
+
+      fetchEnterprises();
+      setEditModalOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const cards = [
     {
       title: "Total Enterprises",
-      value: "240",
+      value: totalEnterprises,
       icon: <Building2 className="text-blue-600" size={26} />,
       bg: "bg-blue-100",
     },
 
     {
       title: "Active Enterprises",
-      value: "180",
+      value: activeEnterprises,
       icon: <BadgeCheck className="text-green-600" size={26} />,
       bg: "bg-green-100",
     },
 
     {
-      title: "Total Employees",
-      value: "1250",
+      title: "Profiles Created",
+      value: profileCreated,
       icon: <Users className="text-orange-600" size={26} />,
       bg: "bg-orange-100",
     },
 
     {
-      title: "Total Revenue",
-      value: "₹5.2L",
+      title: "Profiles Pending",
+      value: profilePending,
       icon: <Wallet className="text-purple-600" size={26} />,
       bg: "bg-purple-100",
     },
   ];
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Active":
-        return "bg-green-100 text-green-700";
+  if (loading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <h2 className="text-xl font-semibold">Loading...</h2>
+      </div>
+    );
+  }
+  const filteredEnterprises = enterprises.filter((enterprise) =>
+    `${enterprise.enterpriseProfile?.firstName || ""} ${
+      enterprise.enterpriseProfile?.lastName || ""
+    } ${enterprise.email || ""}`
+      .toLowerCase()
+      .includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filteredEnterprises.length / itemsPerPage);
 
-      case "Pending":
-        return "bg-yellow-100 text-yellow-700";
+  const startIndex = (currentPage - 1) * itemsPerPage;
 
-      default:
-        return "bg-red-100 text-red-700";
-    }
-  };
-
+  const paginatedEnterprises = filteredEnterprises.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
   return (
     <div className="space-y-6 overflow-hidden p-4 lg:p-6">
       {/* Top Cards */}
@@ -151,7 +188,7 @@ export default function Enterprises() {
         ))}
       </div>
 
-      {/* Search Section */}
+      {/* Search */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
@@ -179,7 +216,10 @@ export default function Enterprises() {
               type="text"
               placeholder="Search enterprise..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
               className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all focus:border-blue-500"
             />
           </div>
@@ -197,12 +237,11 @@ export default function Enterprises() {
           <thead className="bg-gray-100">
             <tr>
               {[
-                "Company",
-                "Contact",
-                "City",
-                "Employees",
-                "Bookings",
-                "Revenue",
+                "Profile",
+                "First Name",
+                "Last Name",
+                "Email",
+                "Phone Number",
                 "Status",
                 "Actions",
               ].map((heading, index) => (
@@ -217,96 +256,80 @@ export default function Enterprises() {
           </thead>
 
           <tbody>
-            {filteredEnterprises.map((enterprise, index) => (
+            {paginatedEnterprises.map((enterprise, index) => (
               <motion.tr
-                key={enterprise.id}
+                key={enterprise._id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.08 }}
                 className="border-b transition hover:bg-gray-50"
               >
-                {/* Company */}
+                {/* Profile */}
                 <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={enterprise.logo}
-                      alt={enterprise.company}
-                      className="h-12 w-12 rounded-2xl object-cover"
-                    />
-
-                    <div>
-                      <h3 className="font-semibold text-gray-800">
-                        {enterprise.company}
-                      </h3>
-
-                      <p className="text-sm text-gray-500">
-                        {enterprise.owner}
-                      </p>
-                    </div>
-                  </div>
+                  <img
+                    src={
+                      enterprise.enterpriseProfile?.profilePic ||
+                      "https://via.placeholder.com/100"
+                    }
+                    alt="Profile"
+                    className="h-12 w-12 rounded-2xl object-cover"
+                  />
                 </td>
 
-                {/* Contact */}
-                <td className="px-5 py-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone size={15} />
-                      {enterprise.phone}
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail size={15} />
-                      {enterprise.email}
-                    </div>
-                  </div>
+                {/* First Name */}
+                <td className="px-5 py-4 text-sm font-medium text-gray-700">
+                  {enterprise.enterpriseProfile?.firstName || "N/A"}
                 </td>
 
-                {/* City */}
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <MapPin size={15} />
-                    {enterprise.city}
-                  </div>
+                {/* Last Name */}
+                <td className="px-5 py-4 text-sm font-medium text-gray-700">
+                  {enterprise.enterpriseProfile?.lastName || "N/A"}
                 </td>
 
-                {/* Employees */}
-                <td className="px-5 py-4 text-sm font-semibold text-gray-700">
-                  {enterprise.employees}
+                {/* Email */}
+                <td className="px-5 py-4 text-sm text-gray-700">
+                  {enterprise.email}
                 </td>
 
-                {/* Bookings */}
-                <td className="px-5 py-4 text-sm font-semibold text-gray-700">
-                  {enterprise.bookings}
-                </td>
-
-                {/* Revenue */}
-                <td className="px-5 py-4 text-sm font-semibold text-gray-700">
-                  {enterprise.revenue}
+                {/* Phone Number */}
+                <td className="px-5 py-4 text-sm text-gray-700">
+                  {enterprise.enterpriseProfile?.phoneNumber || "N/A"}
                 </td>
 
                 {/* Status */}
                 <td className="px-5 py-4">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
-                      enterprise.status,
-                    )}`}
-                  >
-                    {enterprise.status}
+                  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                    Active
                   </span>
                 </td>
 
                 {/* Actions */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-2">
-                    <button className="rounded-xl bg-blue-100 p-2 transition hover:scale-105 hover:bg-blue-200">
+                    <button
+                      className="rounded-xl bg-blue-100 p-2 transition hover:scale-105 cursor-pointer"
+                      onClick={() => handleView(enterprise._id)}
+                    >
                       <Eye size={16} className="text-blue-600" />
                     </button>
 
-                    <button className="rounded-xl bg-green-100 p-2 transition hover:scale-105 hover:bg-green-200">
+                    <button
+                      className="rounded-xl bg-green-100 p-2 transition hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setSelectedEnterpriseEdit(enterprise);
+                        setEditModalOpen(true);
+                      }}
+                    >
                       <Pencil size={16} className="text-green-600" />
                     </button>
 
-                    <button className="rounded-xl bg-red-100 p-2 transition hover:scale-105 hover:bg-red-200">
+                    <button
+                      className="rounded-xl bg-red-100 p-2 transition hover:scale-105 cursor-pointer"
+                      onClick={() => {
+                        setSelectedDeleteId(enterprise._id);
+                        setDeleteModalOpen(true);
+                      }}
+                    >
                       <Trash2 size={16} className="text-red-600" />
                     </button>
                   </div>
@@ -319,93 +342,103 @@ export default function Enterprises() {
 
       {/* Mobile Cards */}
       <div className="grid gap-4 xl:hidden">
-        {filteredEnterprises.map((enterprise, index) => (
+        {paginatedEnterprises.map((enterprise, index) => (
           <motion.div
-            key={enterprise.id}
+            key={enterprise._id}
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.08 }}
             whileHover={{ y: -4 }}
             className="rounded-3xl bg-white p-5 shadow-sm"
           >
-            {/* Top */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <img
-                  src={enterprise.logo}
-                  alt={enterprise.company}
+                  src={
+                    enterprise.enterpriseProfile?.profilePic ||
+                    "https://via.placeholder.com/100"
+                  }
+                  alt="Profile"
                   className="h-16 w-16 rounded-2xl object-cover"
                 />
 
                 <div>
                   <h3 className="font-bold text-gray-800">
-                    {enterprise.company}
+                    {enterprise.enterpriseProfile?.firstName || "N/A"}{" "}
+                    {enterprise.enterpriseProfile?.lastName || ""}
                   </h3>
 
-                  <p className="text-sm text-gray-500">{enterprise.owner}</p>
+                  <p className="text-sm text-gray-500">
+                    {enterprise.user?.email}
+                  </p>
                 </div>
               </div>
 
-              <button className="rounded-xl bg-gray-100 p-2">
+              <button className="rounded-xl bg-gray-100 p-2 cursor-pointer">
                 <MoreVertical size={18} className="text-gray-600" />
               </button>
             </div>
 
-            {/* Details */}
             <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-gray-500">Phone</p>
+                <p className="text-sm text-gray-500">{enterprise.email}</p>
 
                 <h4 className="mt-1 font-medium text-gray-800">
-                  {enterprise.phone}
+                  {enterprise.enterpriseProfile?.phoneNumber || "N/A"}
                 </h4>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-gray-500">City</p>
+                <p className="text-gray-500">Email</p>
 
-                <h4 className="mt-1 font-medium text-gray-800">
-                  {enterprise.city}
+                <h4 className="mt-1 break-all font-medium text-gray-800">
+                  {enterprise.user?.email}
                 </h4>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-gray-500">Employees</p>
+                <p className="text-gray-500">Status</p>
 
-                <h4 className="mt-1 font-medium text-gray-800">
-                  {enterprise.employees}
-                </h4>
+                <h4 className="mt-1 font-medium text-green-600">Active</h4>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
                 <p className="text-gray-500">Revenue</p>
 
-                <h4 className="mt-1 font-medium text-gray-800">
-                  {enterprise.revenue}
-                </h4>
+                <h4 className="mt-1 font-medium text-gray-800">₹0</h4>
               </div>
             </div>
 
-            {/* Bottom */}
             <div className="mt-5 flex items-center justify-between">
-              <span
-                className={`rounded-full px-4 py-1 text-xs font-medium ${getStatusStyle(
-                  enterprise.status,
-                )}`}
-              >
-                {enterprise.status}
+              <span className="rounded-full bg-green-100 px-4 py-1 text-xs font-medium text-green-700">
+                Active
               </span>
 
               <div className="flex items-center gap-2">
-                <button className="rounded-xl bg-blue-100 p-2 transition hover:scale-105">
+                <button
+                  className="rounded-xl bg-blue-100 p-2 transition hover:scale-105 cursor-pointer"
+                  onClick={() => handleView(enterprise._id)}
+                >
                   <Eye size={16} className="text-blue-600" />
                 </button>
 
-                <button className="rounded-xl bg-green-100 p-2 transition hover:scale-105">
+                <button
+                  className="rounded-xl bg-green-100 p-2 transition hover:scale-105 cursor-pointer"
+                  onClick={() => {
+                    setSelectedEnterpriseEdit(enterprise);
+                    setEditModalOpen(true);
+                  }}
+                >
                   <Pencil size={16} className="text-green-600" />
                 </button>
 
-                <button className="rounded-xl bg-red-100 p-2 transition hover:scale-105">
+                <button
+                  className="rounded-xl bg-red-100 p-2 transition hover:scale-105 cursor-pointer"
+                  onClick={() => {
+                    setSelectedDeleteId(enterprise._id);
+                    setDeleteModalOpen(true);
+                  }}
+                >
                   <Trash2 size={16} className="text-red-600" />
                 </button>
               </div>
@@ -413,6 +446,58 @@ export default function Enterprises() {
           </motion.div>
         ))}
       </div>
+      <div className="mt-6 flex items-center justify-end gap-3 pr-[30px]">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`h-10 w-10 rounded-xl border font-semibold transition-all duration-200 ${
+              currentPage === index + 1
+                ? "border-red-600 bg-red-500/30 text-red-700 shadow-md scale-105"
+                : "border-red-500 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:scale-105"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+      <EnterpriseViewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        enterprise={selectedEnterprise}
+      />
+      <DeleteEnterpriseModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setSelectedDeleteId(null);
+        }}
+        onConfirm={handleDelete}
+      />
+      <UpdateEnterpriseModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        enterprise={selectedEnterpriseEdit}
+        onUpdate={handleUpdate}
+      />
     </div>
   );
 }

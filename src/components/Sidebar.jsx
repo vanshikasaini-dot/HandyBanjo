@@ -6,6 +6,7 @@ import {
   X,
   LayoutDashboard,
   Users,
+  Layers,
   UserCheck,
   Wrench,
   CalendarDays,
@@ -46,6 +47,11 @@ export default function Sidebar({ close }) {
           name: "Customers",
           path: "/dashboard/users/customers",
           icon: <User size={16} />,
+        },
+        {
+          name: "Category",
+          path: "/dashboard/users/category",
+          icon: <Layers size={16} />,
         },
         {
           name: "Service Providers",
@@ -225,7 +231,7 @@ export default function Sidebar({ close }) {
                   onClick={close}
                   className={`flex items-center gap-3 whitespace-nowrap rounded-lg p-3 transition-all duration-200 ${
                     isActive(menu.path)
-                      ? "bg-red-500 text-black"
+                      ? "bg-red-500 text-white"
                       : "hover:bg-slate-700"
                   }`}
                 >
@@ -239,7 +245,7 @@ export default function Sidebar({ close }) {
                     onClick={() => toggleMenu(menu.title)}
                     className={`w-full flex items-center justify-between rounded-lg p-3 whitespace-nowrap transition-all duration-200 ${
                       parentActive
-                        ? "bg-red-500 text-black"
+                        ? "bg-red-500 text-white"
                         : "hover:bg-slate-700"
                     }`}
                   >

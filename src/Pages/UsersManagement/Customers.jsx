@@ -8,10 +8,14 @@ import {
   Users,
   UserCheck,
   UserX,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Customers() {
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const customers = [
     {
@@ -49,10 +53,181 @@ export default function Customers() {
       joinDate: "01 Mar 2026",
       image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
     },
+    {
+      id: 4,
+      name: "Rohit Kumar",
+      email: "rohit@gmail.com",
+      phone: "9876543213",
+      city: "Jaipur",
+      bookings: 4,
+      status: "Active",
+      joinDate: "10 Apr 2026",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    },
+    {
+      id: 5,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 6,
+      name: "Rohit Kumar",
+      email: "rohit@gmail.com",
+      phone: "9876543213",
+      city: "Jaipur",
+      bookings: 4,
+      status: "Active",
+      joinDate: "10 Apr 2026",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    },
+    {
+      id: 7,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 8,
+      name: "Rohit Kumar",
+      email: "rohit@gmail.com",
+      phone: "9876543213",
+      city: "Jaipur",
+      bookings: 4,
+      status: "Active",
+      joinDate: "10 Apr 2026",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    },
+    {
+      id: 9,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 10,
+      name: "Rohit Kumar",
+      email: "rohit@gmail.com",
+      phone: "9876543213",
+      city: "Jaipur",
+      bookings: 4,
+      status: "Active",
+      joinDate: "10 Apr 2026",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    },
+    {
+      id: 11,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 12,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 13,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 14,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 15,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 16,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 17,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
+    {
+      id: 18,
+      name: "Neha Gupta",
+      email: "neha@gmail.com",
+      phone: "9876543214",
+      city: "Pune",
+      bookings: 7,
+      status: "Pending",
+      joinDate: "15 Mar 2026",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    },
   ];
 
   const filteredCustomers = customers.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentCustomers = filteredCustomers.slice(
+    startIndex,
+    startIndex + itemsPerPage,
   );
 
   const getStatusStyle = (status) => {
@@ -159,8 +334,8 @@ export default function Customers() {
         transition={{ duration: 0.5 }}
         className="hidden overflow-hidden rounded-3xl bg-white shadow-sm lg:block"
       >
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px]">
+        <div>
+          <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
                 {[
@@ -175,7 +350,7 @@ export default function Customers() {
                 ].map((heading, index) => (
                   <th
                     key={index}
-                    className="px-5 py-4 text-left text-sm font-semibold text-gray-600"
+                    className="px-3 py-4 text-left text-sm font-semibold text-gray-600"
                   >
                     {heading}
                   </th>
@@ -184,7 +359,7 @@ export default function Customers() {
             </thead>
 
             <tbody>
-              {filteredCustomers.map((item, index) => (
+              {currentCustomers.map((item, index) => (
                 <motion.tr
                   key={item.id}
                   initial={{ opacity: 0, x: -30 }}
@@ -275,22 +450,57 @@ export default function Customers() {
               ))}
             </tbody>
           </table>
+        <div className="flex justify-end items-center gap-2 p-4 border-t bg-white">
+
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
+  >
+    <ChevronLeft size={18} />
+  </button>
+
+  {Array.from({ length: totalPages }, (_, index) => (
+    <button
+      key={index}
+      onClick={() => setCurrentPage(index + 1)}
+      className={`w-10 h-10 rounded-lg font-medium transition
+        ${
+          currentPage === index + 1
+            ? "bg-blue-500 text-white"
+            : "bg-white border hover:bg-blue-100"
+        }`}
+    >
+      {index + 1}
+    </button>
+  ))}
+
+  <button
+    onClick={() =>
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+    }
+    disabled={currentPage === totalPages}
+    className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
+  >
+    <ChevronRight size={18} />
+  </button>
+
+</div>
         </div>
       </motion.div>
 
       {/* Mobile Cards */}
       <div className="grid gap-4 lg:hidden">
         {filteredCustomers.map((item, index) => (
-          <motion.div
+          <motion.tr
             key={item.id}
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{
               duration: 0.4,
               delay: index * 0.1,
             }}
-            whileHover={{ y: -3 }}
-            className="rounded-3xl bg-white p-4 shadow-sm"
+            className="border-b transition hover:bg-gray-50"
           >
             {/* Top */}
             <div className="flex items-start justify-between gap-3">
@@ -376,7 +586,7 @@ export default function Customers() {
                 </div>
               </motion.button>
             </div>
-          </motion.div>
+          </motion.tr>
         ))}
       </div>
     </div>

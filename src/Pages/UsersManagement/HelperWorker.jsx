@@ -1,5 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { getAllHelpers } from "../../Apis/Helper";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  getHelperById,
+  updateHelperById,
+  deleteHelperById,
+} from "../../Apis/Helper";
+import {
+  ViewHelperModal,
+  DeleteHelperModal,
+  UpdateHelperModal,
+} from "../../components/Model/HelperModels";
 import {
   Search,
   Eye,
@@ -18,62 +30,72 @@ import {
 
 export default function HelperWorkers() {
   const [search, setSearch] = useState("");
+  const [workers, setWorkers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [viewModal, setViewModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [editModal, setEditModal] = useState(false);
+  useEffect(() => {
+    fetchWorkers();
+  }, []);
 
-  const workers = [
-    {
-      id: 1,
-      name: "Rahul Sharma",
-      phone: "9876543210",
-      email: "rahul@gmail.com",
-      city: "Delhi",
-      skill: "Electrician",
-      status: "Active",
-      rating: 4.8,
-      jobs: 120,
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-    {
-      id: 2,
-      name: "Amit Kumar",
-      phone: "9876543211",
-      email: "amit@gmail.com",
-      city: "Noida",
-      skill: "Plumber",
-      status: "Busy",
-      rating: 4.5,
-      jobs: 98,
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-    },
-    {
-      id: 3,
-      name: "Vikas Singh",
-      phone: "9876543212",
-      email: "vikas@gmail.com",
-      city: "Jaipur",
-      skill: "Cleaner",
-      status: "Inactive",
-      rating: 4.2,
-      jobs: 75,
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 4,
-      name: "Rohit Verma",
-      phone: "9876543213",
-      email: "rohit@gmail.com",
-      city: "Mumbai",
-      skill: "Painter",
-      status: "Active",
-      rating: 4.9,
-      jobs: 140,
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-  ];
+  const fetchWorkers = async () => {
+    try {
+      const response = await getAllHelpers();
 
+      console.log("Full Response =>", response);
+      console.log("Response Data =>", response.data);
+
+      setWorkers(response?.data || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleDelete = async () => {
+    try {
+      await deleteHelperById(selectedWorker._id);
+
+      fetchWorkers();
+
+      setDeleteModal(false);
+      setSelectedWorker(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const filteredWorkers = workers.filter((worker) =>
-    worker.name.toLowerCase().includes(search.toLowerCase()),
+    `${worker?.helperProfile?.firstName || ""} ${
+      worker?.helperProfile?.lastName || ""
+    } ${worker?.email || ""}`
+      .toLowerCase()
+      .includes(search.toLowerCase()),
   );
+  const handleUpdate = async (formData) => {
+    try {
+      await updateHelperById(selectedWorker._id, formData);
 
+      fetchWorkers();
+
+      setEditModal(false);
+      setSelectedWorker(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
+
+  const indexOfLastWorker = currentPage * itemsPerPage;
+  const indexOfFirstWorker = indexOfLastWorker - itemsPerPage;
+
+  const currentWorkers = filteredWorkers.slice(
+    indexOfFirstWorker,
+    indexOfLastWorker,
+  );
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-100 p-4 sm:p-6">
       {/* Top Cards */}
@@ -81,7 +103,7 @@ export default function HelperWorkers() {
         {[
           {
             title: "Total Workers",
-            value: "240",
+            value: workers.length,
             icon: <Users size={28} />,
             bg: "bg-blue-100",
             color: "text-blue-600",
@@ -186,13 +208,11 @@ export default function HelperWorkers() {
             <thead className="bg-gray-100">
               <tr>
                 {[
-                  "Worker",
-                  "Contact",
-                  "City",
-                  "Skill",
-                  "Jobs",
-                  "Rating",
-                  "Status",
+                  "First Name",
+                  "Last Name",
+                  "Email",
+                  "Phone Number",
+                  "Role",
                   "Actions",
                 ].map((item, index) => (
                   <th
@@ -206,122 +226,65 @@ export default function HelperWorkers() {
             </thead>
 
             <tbody>
-              {filteredWorkers.map((worker, index) => (
+              {currentWorkers.map((worker, index) => (
                 <motion.tr
-                  key={worker.id}
+                  key={worker._id}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{
-                    backgroundColor: "#f9fafb",
-                  }}
-                  className="border-t border-gray-100 transition-all duration-300"
+                  className="border-t border-gray-100"
                 >
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <motion.img
-                        whileHover={{ scale: 1.08, rotate: 2 }}
-                        src={worker.image}
-                        alt={worker.name}
-                        className="h-12 w-12 rounded-2xl object-cover"
-                      />
-
-                      <div>
-                        <h2 className="font-semibold text-gray-800">
-                          {worker.name}
-                        </h2>
-                      </div>
-                    </div>
+                  <td className="px-4 py-4 font-medium text-gray-800">
+                    {worker?.helperProfile?.firstName || "N/A"}
                   </td>
 
-                  <td className="px-4 py-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Phone size={15} />
-                        {worker.phone}
-                      </div>
-
-                      <div className="flex items-center gap-2 break-all text-sm text-gray-600">
-                        <Mail size={15} />
-                        {worker.email}
-                      </div>
-                    </div>
+                  <td className="px-4 py-4 font-medium text-gray-800">
+                    {worker?.helperProfile?.lastName || "N/A"}
                   </td>
 
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin size={15} />
-                      {worker.city}
-                    </div>
+                  <td className="px-4 py-4 text-gray-600">{worker?.email}</td>
+
+                  <td className="px-4 py-4 text-gray-600">
+                    {worker?.helperProfile?.phoneNumber || "N/A"}
                   </td>
 
                   <td className="px-4 py-4">
                     <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600">
-                      {worker.skill}
+                      {worker?.role}
                     </span>
                   </td>
 
-                  <td className="px-4 py-4 font-semibold text-gray-700">
-                    {worker.jobs}
-                  </td>
-
                   <td className="px-4 py-4">
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 2,
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="rounded-xl bg-blue-100 p-2 text-blue-600 cursor-pointer"
+                        onClick={() => {
+                          setSelectedWorker(worker);
+                          setViewModal(true);
                         }}
                       >
-                        <Star size={16} fill="currentColor" />
-                      </motion.div>
+                        <Eye size={18} />
+                      </button>
 
-                      <span className="font-medium text-gray-700">
-                        {worker.rating}
-                      </span>
-                    </div>
-                  </td>
+                      <button
+                        onClick={() => {
+                          setSelectedWorker(worker);
+                          setEditModal(true);
+                        }}
+                        className="rounded-xl bg-green-100 p-2 text-green-600 cursor-pointer"
+                      >
+                        <Pencil size={18} />
+                      </button>
 
-                  <td className="px-4 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        worker.status === "Active"
-                          ? "bg-green-100 text-green-600"
-                          : worker.status === "Busy"
-                            ? "bg-orange-100 text-orange-600"
-                            : "bg-red-100 text-red-600"
-                      }`}
-                    >
-                      {worker.status}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      {[
-                        {
-                          icon: <Eye size={18} />,
-                          bg: "bg-blue-100 text-blue-600",
-                        },
-                        {
-                          icon: <Pencil size={18} />,
-                          bg: "bg-green-100 text-green-600",
-                        },
-                        {
-                          icon: <Trash2 size={18} />,
-                          bg: "bg-red-100 text-red-600",
-                        },
-                      ].map((btn, i) => (
-                        <motion.button
-                          key={i}
-                          whileHover={{ scale: 1.12, rotate: 3 }}
-                          whileTap={{ scale: 0.9 }}
-                          className={`rounded-xl p-2 transition-all duration-300 ${btn.bg}`}
-                        >
-                          {btn.icon}
-                        </motion.button>
-                      ))}
+                      <button
+                        className="rounded-xl bg-red-100 p-2 text-red-600 cursor-pointer"
+                        onClick={() => {
+                          setSelectedWorker(worker);
+                          setDeleteModal(true);
+                        }}
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   </td>
                 </motion.tr>
@@ -333,7 +296,7 @@ export default function HelperWorkers() {
 
       {/* Mobile Cards */}
       <div className="mt-6 grid grid-cols-1 gap-5 xl:hidden">
-        {filteredWorkers.map((worker, index) => (
+        {currentWorkers.map((worker, index) => (
           <motion.div
             key={worker.id}
             initial={{ opacity: 0, y: 35 }}
@@ -346,25 +309,23 @@ export default function HelperWorkers() {
               <div className="flex min-w-0 gap-4">
                 <motion.img
                   whileHover={{ scale: 1.05, rotate: 2 }}
-                  src={worker.image}
+                  src={
+                    worker?.helperProfile?.profileImage ||
+                    "https://via.placeholder.com/150"
+                  }
                   alt={worker.name}
                   className="h-16 w-16 rounded-2xl object-cover"
                 />
 
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-bold text-gray-800">
-                    {worker.name}
+                    {worker?.helperProfile?.firstName || "N/A"}{" "}
+                    {worker?.helperProfile?.lastName || ""}
                   </h2>
 
-                  <p className="mt-1 text-sm text-gray-500">{worker.skill}</p>
-
-                  <div className="mt-2 flex items-center gap-1 text-yellow-500">
-                    <Star size={16} fill="currentColor" />
-
-                    <span className="text-sm font-medium text-gray-700">
-                      {worker.rating}
-                    </span>
-                  </div>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {worker?.role || "helper"}
+                  </p>
                 </div>
               </div>
 
@@ -381,7 +342,7 @@ export default function HelperWorkers() {
                 <p className="text-xs text-gray-500">Phone</p>
 
                 <h3 className="mt-1 break-all text-sm font-medium text-gray-800">
-                  {worker.phone}
+                  {worker?.helperProfile?.phoneNumber || "N/A"}
                 </h3>
               </div>
 
@@ -389,7 +350,7 @@ export default function HelperWorkers() {
                 <p className="text-xs text-gray-500">City</p>
 
                 <h3 className="mt-1 text-sm font-medium text-gray-800">
-                  {worker.city}
+                  {worker?.helperProfile?.city || "N/A"}
                 </h3>
               </div>
 
@@ -417,35 +378,89 @@ export default function HelperWorkers() {
                 </span>
               </div>
             </div>
-
             <div className="mt-5 grid grid-cols-3 gap-2">
-              {[
-                {
-                  icon: <Eye size={18} />,
-                  bg: "bg-blue-100 text-blue-600",
-                },
-                {
-                  icon: <Pencil size={18} />,
-                  bg: "bg-green-100 text-green-600",
-                },
-                {
-                  icon: <Trash2 size={18} />,
-                  bg: "bg-red-100 text-red-600",
-                },
-              ].map((btn, i) => (
-                <motion.button
-                  key={i}
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`flex items-center justify-center rounded-2xl py-3 transition-all duration-300 ${btn.bg}`}
-                >
-                  {btn.icon}
-                </motion.button>
-              ))}
+              <button
+                onClick={() => {
+                  setSelectedWorker(worker);
+                  setViewModal(true);
+                }}
+                className="flex items-center justify-center rounded-2xl py-3 bg-blue-100 text-blue-600"
+              >
+                <Eye size={18} />
+              </button>
+
+              <button
+                onClick={() => {
+                  setSelectedWorker(worker);
+                  setEditModal(true);
+                }}
+                className="flex items-center justify-center rounded-2xl py-3 bg-green-100 text-green-600"
+              >
+                <Pencil size={18} />
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedWorker(worker);
+                  setDeleteModal(true);
+                }}
+                className="flex items-center justify-center rounded-2xl py-3 bg-red-100 text-red-600"
+              >
+                <Trash2 size={18} />
+              </button>
             </div>
           </motion.div>
         ))}
       </div>
+      <div className="mt-6 flex items-center justify-end gap-3 pr-[30px]">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`h-10 w-10 rounded-xl border font-semibold transition-all duration-200 ${
+              currentPage === index + 1
+                ? "scale-105 border-red-600 bg-red-500/30 text-red-700 shadow-md"
+                : "border-red-500 bg-red-500/10 text-red-600 hover:scale-105 hover:bg-red-500/20"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+      <ViewHelperModal
+        isOpen={viewModal}
+        onClose={() => setViewModal(false)}
+        worker={selectedWorker}
+      />
+
+      <DeleteHelperModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onDelete={handleDelete}
+      />
+      <UpdateHelperModal
+        isOpen={editModal}
+        onClose={() => setEditModal(false)}
+        worker={selectedWorker}
+        onUpdate={handleUpdate}
+      />
     </div>
   );
 }
