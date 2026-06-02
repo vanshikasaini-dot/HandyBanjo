@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Camera } from "lucide-react";
 
 export function AddCategoryModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -41,16 +41,6 @@ export function AddCategoryModal({ isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Category Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full rounded-xl border p-3 outline-none"
-            required
-          />
-
           <textarea
             name="description"
             placeholder="Description"
@@ -128,8 +118,10 @@ export function EditCategoryModal({ isOpen, onClose, category, onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    image: "",
   });
+
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState("");
 
   useEffect(() => {
     if (category) {
@@ -152,9 +144,26 @@ export function EditCategoryModal({ isOpen, onClose, category, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(category._id, formData);
-  };
 
+    const data = new FormData();
+
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+
+    if (image) {
+      data.append("image", image);
+    }
+
+    onSubmit(data);
+
+    setFormData({
+      name: "",
+      description: "",
+    });
+
+    setImage(null);
+    setPreview("");
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-lg rounded-3xl bg-white p-6">

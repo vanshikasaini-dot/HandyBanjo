@@ -9,7 +9,6 @@ import {
 } from "../../Apis/Helper";
 import {
   ViewHelperModal,
-  DeleteHelperModal,
   UpdateHelperModal,
 } from "../../components/Model/HelperModels";
 import {
@@ -28,6 +27,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 
+import { DeleteModal } from "../../components/Model/DeleteModal";
 export default function HelperWorkers() {
   const [search, setSearch] = useState("");
   const [workers, setWorkers] = useState([]);
@@ -69,9 +69,7 @@ export default function HelperWorkers() {
     }
   };
   const filteredWorkers = workers.filter((worker) =>
-    `${worker?.helperProfile?.firstName || ""} ${
-      worker?.helperProfile?.lastName || ""
-    } ${worker?.email || ""}`
+    `${worker?.helperProfile?.fullName || ""} ${worker?.email || ""}`
       .toLowerCase()
       .includes(search.toLowerCase()),
   );
@@ -98,8 +96,43 @@ export default function HelperWorkers() {
   );
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-100 p-4 sm:p-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className=" rounded-3xl bg-white p-5 shadow-sm"
+      >
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Helper Workers</h1>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Manage all helper workers easily
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full lg:w-[320px]">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
+              type="text"
+              placeholder="Search worker..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+        </div>
+      </motion.div>
+
       {/* Top Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className=" mt-[30px]">
         {[
           {
             title: "Total Workers",
@@ -107,27 +140,6 @@ export default function HelperWorkers() {
             icon: <Users size={28} />,
             bg: "bg-blue-100",
             color: "text-blue-600",
-          },
-          {
-            title: "Active Workers",
-            value: "180",
-            icon: <UserCheck size={28} />,
-            bg: "bg-green-100",
-            color: "text-green-600",
-          },
-          {
-            title: "Inactive Workers",
-            value: "32",
-            icon: <UserX size={28} />,
-            bg: "bg-red-100",
-            color: "text-red-600",
-          },
-          {
-            title: "Total Jobs",
-            value: "430",
-            icon: <Briefcase size={28} />,
-            bg: "bg-purple-100",
-            color: "text-purple-600",
           },
         ].map((card, index) => (
           <motion.div
@@ -161,41 +173,6 @@ export default function HelperWorkers() {
         ))}
       </div>
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 35 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mt-6 rounded-3xl bg-white p-5 shadow-sm"
-      >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Helper Workers</h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Manage all helper workers easily
-            </p>
-          </div>
-
-          {/* Search */}
-          <div className="relative w-full lg:w-[320px]">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-              size={18}
-            />
-
-            <motion.input
-              whileFocus={{ scale: 1.02 }}
-              type="text"
-              placeholder="Search worker..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
-        </div>
-      </motion.div>
-
       {/* Desktop Table */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -208,11 +185,13 @@ export default function HelperWorkers() {
             <thead className="bg-gray-100">
               <tr>
                 {[
-                  "First Name",
-                  "Last Name",
+                  "Profile",
+                  "Full Name",
                   "Email",
-                  "Phone Number",
-                  "Role",
+                  "Phone",
+                  "Experience",
+                  "Hourly Rate",
+                  "Available",
                   "Actions",
                 ].map((item, index) => (
                   <th
@@ -234,23 +213,46 @@ export default function HelperWorkers() {
                   transition={{ delay: index * 0.1 }}
                   className="border-t border-gray-100"
                 >
-                  <td className="px-4 py-4 font-medium text-gray-800">
-                    {worker?.helperProfile?.firstName || "N/A"}
+                  <td className="px-4 py-4">
+                    <img
+                      src={
+                        worker?.helperProfile?.profileImage ||
+                        "https://via.placeholder.com/50"
+                      }
+                      alt="profile"
+                      className="h-12 w-12 rounded-full object-cover"
+                    />
                   </td>
 
                   <td className="px-4 py-4 font-medium text-gray-800">
-                    {worker?.helperProfile?.lastName || "N/A"}
+                    {worker?.helperProfile?.fullName || "N/A"}
                   </td>
 
                   <td className="px-4 py-4 text-gray-600">{worker?.email}</td>
 
                   <td className="px-4 py-4 text-gray-600">
-                    {worker?.helperProfile?.phoneNumber || "N/A"}
+                    {worker?.helperProfile?.phone || "N/A"}
+                  </td>
+
+                  <td className="px-4 py-4 text-gray-600">
+                    {worker?.helperProfile?.experience || 0} Years
+                  </td>
+
+                  <td className="px-4 py-4 text-gray-600">
+                    ₹{worker?.helperProfile?.hourlyRate || 0}
                   </td>
 
                   <td className="px-4 py-4">
-                    <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600">
-                      {worker?.role}
+                    <span
+                      className={`rounded-full px-3 py-1 text-sm font-medium ${
+                        worker?.helperProfile?.isAvailable
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
+                      {worker?.helperProfile?.isAvailable
+                        ? "Available"
+                        : "Unavailable"}
                     </span>
                   </td>
 
@@ -267,11 +269,11 @@ export default function HelperWorkers() {
                       </button>
 
                       <button
+                        className="rounded-xl bg-green-100 p-2 text-green-600 cursor-pointer"
                         onClick={() => {
                           setSelectedWorker(worker);
                           setEditModal(true);
                         }}
-                        className="rounded-xl bg-green-100 p-2 text-green-600 cursor-pointer"
                       >
                         <Pencil size={18} />
                       </button>
@@ -298,7 +300,7 @@ export default function HelperWorkers() {
       <div className="mt-6 grid grid-cols-1 gap-5 xl:hidden">
         {currentWorkers.map((worker, index) => (
           <motion.div
-            key={worker.id}
+            key={worker._id}
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
@@ -313,14 +315,13 @@ export default function HelperWorkers() {
                     worker?.helperProfile?.profileImage ||
                     "https://via.placeholder.com/150"
                   }
-                  alt={worker.name}
+                  alt="helper"
                   className="h-16 w-16 rounded-2xl object-cover"
                 />
 
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-bold text-gray-800">
-                    {worker?.helperProfile?.firstName || "N/A"}{" "}
-                    {worker?.helperProfile?.lastName || ""}
+                    {worker?.helperProfile?.fullName || "N/A"}
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
@@ -328,13 +329,6 @@ export default function HelperWorkers() {
                   </p>
                 </div>
               </div>
-
-              <motion.button
-                whileHover={{ rotate: 90 }}
-                className="shrink-0 rounded-xl bg-gray-100 p-2 text-gray-600"
-              >
-                <MoreVertical size={18} />
-              </motion.button>
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -342,49 +336,50 @@ export default function HelperWorkers() {
                 <p className="text-xs text-gray-500">Phone</p>
 
                 <h3 className="mt-1 break-all text-sm font-medium text-gray-800">
-                  {worker?.helperProfile?.phoneNumber || "N/A"}
+                  {worker?.helperProfile?.phone || "N/A"}
                 </h3>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-xs text-gray-500">City</p>
+                <p className="text-xs text-gray-500">Experience</p>
 
                 <h3 className="mt-1 text-sm font-medium text-gray-800">
-                  {worker?.helperProfile?.city || "N/A"}
+                  {worker?.helperProfile?.experience || 0} Years
                 </h3>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-xs text-gray-500">Jobs</p>
+                <p className="text-xs text-gray-500">Hourly Rate</p>
 
                 <h3 className="mt-1 text-sm font-medium text-gray-800">
-                  {worker.jobs}
+                  ₹{worker?.helperProfile?.hourlyRate || 0}
                 </h3>
               </div>
 
               <div className="rounded-2xl bg-gray-50 p-3">
-                <p className="text-xs text-gray-500">Status</p>
+                <p className="text-xs text-gray-500">Availability</p>
 
                 <span
                   className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                    worker.status === "Active"
+                    worker?.helperProfile?.isAvailable
                       ? "bg-green-100 text-green-600"
-                      : worker.status === "Busy"
-                        ? "bg-orange-100 text-orange-600"
-                        : "bg-red-100 text-red-600"
+                      : "bg-red-100 text-red-600"
                   }`}
                 >
-                  {worker.status}
+                  {worker?.helperProfile?.isAvailable
+                    ? "Available"
+                    : "Unavailable"}
                 </span>
               </div>
             </div>
+
             <div className="mt-5 grid grid-cols-3 gap-2">
               <button
                 onClick={() => {
                   setSelectedWorker(worker);
                   setViewModal(true);
                 }}
-                className="flex items-center justify-center rounded-2xl py-3 bg-blue-100 text-blue-600"
+                className="flex items-center justify-center rounded-2xl py-3 bg-blue-100 text-blue-600 cursor-pointer"
               >
                 <Eye size={18} />
               </button>
@@ -394,16 +389,17 @@ export default function HelperWorkers() {
                   setSelectedWorker(worker);
                   setEditModal(true);
                 }}
-                className="flex items-center justify-center rounded-2xl py-3 bg-green-100 text-green-600"
+                className="flex items-center justify-center rounded-2xl py-3 bg-green-100 text-green-600 cursor-pointer"
               >
                 <Pencil size={18} />
               </button>
+
               <button
                 onClick={() => {
                   setSelectedWorker(worker);
                   setDeleteModal(true);
                 }}
-                className="flex items-center justify-center rounded-2xl py-3 bg-red-100 text-red-600"
+                className="flex items-center justify-center rounded-2xl py-3 bg-red-100 text-red-600 cursor-pointer"
               >
                 <Trash2 size={18} />
               </button>
@@ -449,11 +445,17 @@ export default function HelperWorkers() {
         onClose={() => setViewModal(false)}
         worker={selectedWorker}
       />
-
-      <DeleteHelperModal
+      <DeleteModal
         isOpen={deleteModal}
-        onClose={() => setDeleteModal(false)}
-        onDelete={handleDelete}
+        onClose={() => {
+          setDeleteModal(false);
+          setSelectedWorker(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Helper"
+        message={`Are you sure you want to delete ${
+          selectedWorker?.helperProfile?.fullName || "this helper"
+        }?`}
       />
       <UpdateHelperModal
         isOpen={editModal}

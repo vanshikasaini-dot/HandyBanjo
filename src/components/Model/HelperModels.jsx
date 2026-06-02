@@ -1,5 +1,14 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import {
+  X,
+  Upload,
+  Camera,
+  Mail,
+  Phone,
+  Briefcase,
+  IndianRupee,
+} from "lucide-react";
 
 export function ViewHelperModal({ isOpen, onClose, worker }) {
   if (!isOpen) return null;
@@ -9,41 +18,81 @@ export function ViewHelperModal({ isOpen, onClose, worker }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-2xl bg-white p-4 shadow-xl"
       >
-        <h2 className="mb-5 text-2xl font-bold text-gray-800">
-          Helper Details
-        </h2>
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="cursor-pointer absolute right-4 top-4 rounded-full p-2 text-gray-500 hover:bg-gray-100"
+        >
+          <X size={20} />
+        </button>
 
-        <div className="space-y-3">
-          <p>
-            <span className="font-semibold">First Name:</span>{" "}
-            {worker?.helperProfile?.firstName || "N/A"}
-          </p>
+        {/* Profile */}
+        <div className="flex flex-col items-center">
+          <img
+            src={
+              worker?.helperProfile?.profileImage ||
+              "https://via.placeholder.com/150"
+            }
+            alt="profile"
+            className="h-20 w-20 rounded-full border-2 border-gray-100 object-cover"
+          />
 
-          <p>
-            <span className="font-semibold">Last Name:</span>{" "}
-            {worker?.helperProfile?.lastName || "N/A"}
-          </p>
+          <h2 className="mt-2 text-xl font-bold text-gray-800">
+            {worker?.helperProfile?.fullName || "N/A"}
+          </h2>
+        </div>
 
-          <p>
-            <span className="font-semibold">Email:</span>{" "}
-            {worker?.email || "N/A"}
-          </p>
+        {/* Details */}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-2">
+            <div>
+              <p className="text-[11px] text-gray-500">Email</p>
+              <p className="text-sm font-medium text-gray-800">
+                {worker?.email || "N/A"}
+              </p>
+            </div>
+          </div>
 
-          <p>
-            <span className="font-semibold">Phone:</span>{" "}
-            {worker?.helperProfile?.phoneNumber || "N/A"}
-          </p>
+          <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-2">
+            <div>
+              <p className="text-[11px] text-gray-500">Phone</p>
+              <p className="text-sm font-medium text-gray-800">
+                {worker?.helperProfile?.phone || "N/A"}
+              </p>
+            </div>
+          </div>
 
-          <p>
-            <span className="font-semibold">Role:</span> {worker?.role || "N/A"}
-          </p>
+          <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-2">
+            <div>
+              <p className="text-[11px] text-gray-500">Experience</p>
+              <p className="text-sm font-medium text-gray-800">
+                {worker?.helperProfile?.experience || 0} Years
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-2">
+            <div>
+              <p className="text-[11px] text-gray-500">Hourly Rate</p>
+              <p className="text-sm font-medium text-gray-800">
+                ₹{worker?.helperProfile?.hourlyRate || 0}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-gray-50 p-2">
+            <p className="text-[11px] text-gray-500">Role</p>
+            <p className="text-sm font-medium text-gray-800">
+              {worker?.role || "helper"}
+            </p>
+          </div>
         </div>
 
         <button
           onClick={onClose}
-          className="mt-6 w-full rounded-xl bg-red-500 py-3 font-semibold text-white cursor-pointer"
+          className="mt-6 w-full cursor-pointer rounded-2xl bg-red-500 py-3 font-semibold text-white transition hover:bg-red-600"
         >
           Close
         </button>
@@ -52,152 +101,127 @@ export function ViewHelperModal({ isOpen, onClose, worker }) {
   );
 }
 
-export function DeleteHelperModal({ isOpen, onClose, onDelete }) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl"
-      >
-        <h2 className="text-2xl font-bold text-black-600">Delete Helper</h2>
-
-        <p className="mt-3 text-gray-600">
-          Are you sure you want to delete this helper?
-        </p>
-
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-xl border py-3 font-semibold cursor-pointer"
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={onDelete}
-            className="flex-1 rounded-xl bg-red-500 py-3 font-semibold text-white cursor-pointer"
-          >
-            Delete
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-export function UpdateHelperModal({
-  isOpen,
-  onClose,
-  worker,
-  onUpdate,
-}) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+export function UpdateHelperModal({ isOpen, onClose, worker, onUpdate }) {
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [experience, setExperience] = useState("");
+  const [hourlyRate, setHourlyRate] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [preview, setPreview] = useState("");
 
   useEffect(() => {
     if (worker) {
-      setFirstName(worker?.helperProfile?.firstName || "");
-      setLastName(worker?.helperProfile?.lastName || "");
-      setPhoneNumber(worker?.helperProfile?.phoneNumber || "");
+      setFullName(worker?.helperProfile?.fullName || "");
+      setPhone(worker?.helperProfile?.phone || "");
+      setExperience(worker?.helperProfile?.experience || "");
+      setHourlyRate(worker?.helperProfile?.hourlyRate || "");
+      setPreview(worker?.helperProfile?.profileImage || "");
     }
   }, [worker]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onUpdate({
-      helperProfile: {
-        firstName,
-        lastName,
-        phoneNumber,
-      },
-    });
-  };
+    const formData = new FormData();
 
-  if (!isOpen) return null;
+    formData.append("fullName", fullName);
+    formData.append("phone", phone);
+    formData.append("experience", experience);
+    formData.append("hourlyRate", hourlyRate);
+
+    if (profileImage) {
+      formData.append("profileImage", profileImage);
+    }
+
+    onUpdate(formData);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl"
       >
-        <h2 className="mb-5 text-2xl font-bold text-gray-800">
-          Update Helper
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold">Update Helper</h2>
+
+          <button onClick={onClose} className="cursor-pointer">
+            <X size={20} />
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              First Name
-            </label>
+          {/* Profile Upload */}
 
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
-            />
+          <div className="flex justify-center">
+            <div className="relative">
+              <img
+                src={
+                  profileImage
+                    ? URL.createObjectURL(profileImage)
+                    : preview || "/user.png"
+                }
+                alt="preview"
+                className="h-24 w-24 rounded-full border-2 border-gray-200 object-cover"
+              />
+
+              <label className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-blue-400 text-white shadow-lg hover:bg-blue-600">
+                <Camera size={16} />
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    setProfileImage(e.target.files[0]);
+                  }}
+                />
+              </label>
+            </div>
           </div>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full rounded-xl border p-3"
+          />
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Last Name
-            </label>
+          <input
+            type="text"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full rounded-xl border p-3"
+          />
 
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
-            />
-          </div>
+          <input
+            type="number"
+            placeholder="Experience"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            className="w-full rounded-xl border p-3"
+          />
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Phone Number
-            </label>
+          <input
+            type="number"
+            placeholder="Hourly Rate"
+            value={hourlyRate}
+            onChange={(e) => setHourlyRate(e.target.value)}
+            className="w-full rounded-xl border p-3"
+          />
 
-            <input
-              type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div className="mt-6 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-xl border py-3 font-semibold cursor-pointer"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="flex-1 rounded-xl bg-green-500 py-3 font-semibold text-white cursor-pointer"
-            >
-              Update
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-green-500 py-3 font-semibold text-white"
+          >
+            Update Helper
+          </button>
         </form>
       </motion.div>
     </div>
   );
 }
-
-export const updateHelperById = async (id, data) => {
-  const response = await axiosInstance.put(
-    `/helper/updateById/${id}`,
-    data
-  );
-
-  return response.data;
-};

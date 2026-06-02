@@ -9,9 +9,9 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   EnterpriseViewModal,
-  DeleteEnterpriseModal,
   UpdateEnterpriseModal,
 } from "../../components/Model/EnterpriseModal";
+import { DeleteModal } from "../../components/Model/DeleteModal";
 
 import {
   Search,
@@ -40,7 +40,6 @@ export default function Enterprises() {
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedEnterpriseEdit, setSelectedEnterpriseEdit] = useState(null);
-
   const itemsPerPage = 5;
 
   const activeEnterprises = enterprises.length;
@@ -484,13 +483,12 @@ export default function Enterprises() {
         onClose={() => setIsModalOpen(false)}
         enterprise={selectedEnterprise}
       />
-      <DeleteEnterpriseModal
+      <DeleteModal
         isOpen={deleteModalOpen}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setSelectedDeleteId(null);
-        }}
+        onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDelete}
+        title="Delete Enterprise"
+        message="Are you sure you want to delete this enterprise?"
       />
       <UpdateEnterpriseModal
         isOpen={editModalOpen}
