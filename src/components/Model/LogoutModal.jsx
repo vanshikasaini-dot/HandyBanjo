@@ -4,7 +4,7 @@ export default function LogoutModal({ isOpen, onClose, onLogout }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-gray-100 animate-[popup_0.3s_ease-out]">
         <h2 className="text-2xl font-bold text-center mb-2">Confirm Logout</h2>
 
@@ -15,14 +15,14 @@ export default function LogoutModal({ isOpen, onClose, onLogout }) {
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-gray-300 font-medium transition-all duration-300 hover:bg-gray-100 hover:scale-105"
+            className="flex-1 py-3 rounded-xl border border-gray-300 font-medium transition-all duration-300 hover:bg-gray-100 hover:scale-105 cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             onClick={onLogout}
-            className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium transition-all duration-300 hover:bg-red-600 hover:scale-105 active:scale-95"
+            className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium transition-all duration-300 hover:bg-red-600 hover:scale-105 active:scale-95 cursor-pointer"
           >
             Logout
           </button>

@@ -8,10 +8,9 @@ import {
 } from "../../Apis/Category";
 import {
   AddCategoryModal,
-  DeleteCategoryModal,
   EditCategoryModal,
 } from "../../components/Model/CategoryModel";
-
+import { DeleteModal } from "../../components/Model/DeleteModal";
 import {
   Eye,
   Pencil,
@@ -61,9 +60,6 @@ export default function Category() {
   const handleDelete = async () => {
     try {
       await deleteCategory(selectedCategoryId);
-
-      alert("Category Deleted Successfully");
-
       setCategories((prev) =>
         prev.filter((item) => item._id !== selectedCategoryId),
       );
@@ -72,7 +68,6 @@ export default function Category() {
       setSelectedCategoryId(null);
     } catch (error) {
       console.log(error);
-      alert("Failed To Delete Category");
     }
   };
   const openEditModal = (category) => {
@@ -82,9 +77,6 @@ export default function Category() {
   const handleAddCategory = async (formData) => {
     try {
       const response = await createCategory(formData);
-
-      alert("Category Added Successfully");
-
       setCategories((prev) => [response.data, ...prev]);
 
       setIsModalOpen(false);
@@ -92,24 +84,22 @@ export default function Category() {
       fetchCategories();
     } catch (error) {
       console.log(error);
-
-      alert("Failed To Add Category");
     }
   };
-const handleUpdateCategory = async (id, formData) => {
-  try {
-    await updateCategory(id, formData);
+  const handleUpdateCategory = async (id, formData) => {
+    try {
+      await updateCategory(id, formData);
 
-    fetchCategories();
+      fetchCategories();
 
-    setIsEditModalOpen(false);
-    setSelectedCategory(null);
-  } catch (error) {
-    console.log(error);
+      setIsEditModalOpen(false);
+      setSelectedCategory(null);
+    } catch (error) {
+      console.log(error);
 
-    alert("Failed To Update Category");
-  }
-};
+      alert("Failed To Update Category");
+    }
+  };
 
   const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
 
@@ -220,17 +210,12 @@ const handleUpdateCategory = async (id, formData) => {
                       className="w-12 h-12 rounded-xl object-cover"
                     />
                   </td>
-<td className="px-6 py-4 font-medium">{item.name}</td>
+                  <td className="px-6 py-4 font-medium">{item.name}</td>
 
-<td className="px-6 py-4">{item.description}</td>
-          
+                  <td className="px-6 py-4">{item.description}</td>
 
                   <td className="px-6 py-4">
                     <div className="flex justify-center gap-2">
-                      <button className="bg-blue-100 p-2 rounded-xl cursor-pointer">
-                        <Eye size={18} className="text-blue-600" />
-                      </button>
-
                       <button
                         onClick={() => openEditModal(item)}
                         className="bg-green-100 p-2 rounded-xl cursor-pointer"
@@ -262,19 +247,15 @@ const handleUpdateCategory = async (id, formData) => {
                 <img src={item.image} alt="" className="w-14 h-14 rounded-xl" />
 
                 <div>
-              <h3 className="font-semibold">{item.name}</h3>
+                  <h3 className="font-semibold">{item.name}</h3>
 
                   <p className="text-sm text-gray-500">{item.description}</p>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2">
-                <button className="bg-blue-100 p-2 rounded-xl">
-                  <Eye size={18} className="text-blue-600" />
-                </button>
-
                 <button
-            onClick={() => openEditModal(item)}
+                  onClick={() => openEditModal(item)}
                   className="bg-green-100 p-2 rounded-xl"
                 >
                   <Pencil size={18} className="text-green-600" />
@@ -331,13 +312,15 @@ const handleUpdateCategory = async (id, formData) => {
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleAddCategory}
         />
-        <DeleteCategoryModal
+        <DeleteModal
           isOpen={isDeleteModalOpen}
           onClose={() => {
             setIsDeleteModalOpen(false);
             setSelectedCategoryId(null);
           }}
           onConfirm={handleDelete}
+          title="Delete Category"
+          message="Are you sure you want to delete this category?"
         />
         <EditCategoryModal
           isOpen={isEditModalOpen}

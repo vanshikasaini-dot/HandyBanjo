@@ -1,114 +1,128 @@
+import { useEffect, useState } from "react";
 import {
   Users,
   Wrench,
   IndianRupee,
   ClipboardList,
-  Star,
   Clock,
+  UserCheck,
+  Building2,
+  Star,
 } from "lucide-react";
 
+import { getAllDashboard } from "../Apis/dashboard";
+
+function useCount(end = 0, duration = 2000) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!end) return;
+
+    let start = 0;
+    const step = end / (duration / 16);
+
+    const timer = setInterval(() => {
+      start += step;
+
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [end]);
+
+  return count;
+}
+
+function AnimatedValue({ end }) {
+  const count = useCount(end);
+  return <span>{count.toLocaleString()}</span>;
+}
+
 export default function Dashboard() {
-  // Statistics Data
+  const [users, setUsers] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [services, setServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const res = await getAllDashboard();
+        console.log("Dashboard API:", res);
+        setUsers(res?.users || res?.data?.users || {});
+
+        setBookings(res?.bookings || []);
+        setServices(res?.services || []);
+        setReviews(res?.reviews || []);
+      } catch (err) {
+        console.log("Dashboard API error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const stats = [
     {
-      title: "Total Bookings",
-      value: "1,245",
-      icon: <ClipboardList size={28} />,
-      color: "from-blue-500 to-indigo-600",
-    },
-    {
-      title: "Active Technicians",
-      value: "85",
+      title: "Total Users",
+      value: users?.totalUsers || 0,
       icon: <Users size={28} />,
-      color: "from-green-500 to-emerald-600",
     },
     {
-      title: "Revenue",
-      value: "₹1,25,000",
-      icon: <IndianRupee size={28} />,
-      color: "from-yellow-500 to-orange-500",
+      title: "Total Helpers",
+      value: users?.totalHelpers || 0,
+      icon: <Wrench size={28} />,
     },
     {
-      title: "Pending Requests",
-      value: "32",
+      title: "Total Customers",
+      value: users?.totalCustomers || 0,
+      icon: <UserCheck size={28} />,
+    },
+    {
+      title: "Total Pros",
+      value: users?.totalPros || 0,
       icon: <Clock size={28} />,
-      color: "from-red-500 to-pink-600",
-    },
-  ];
-
-  // Recent Bookings
-  const bookings = [
-    {
-      customer: "Rahul Sharma",
-      service: "AC Repair",
-      technician: "Aman",
-      status: "Completed",
     },
     {
-      customer: "Priya Verma",
-      service: "Plumbing",
-      technician: "Ravi",
-      status: "Pending",
-    },
-    {
-      customer: "Ankit",
-      service: "Washing Machine",
-      technician: "Mohit",
-      status: "Ongoing",
-    },
-    {
-      customer: "Sneha",
-      service: "Electrician",
-      technician: "Karan",
-      status: "Completed",
-    },
-  ];
-
-  // Popular Services
-  const services = [
-    {
-      name: "AC Repair",
-      percent: "80%",
-      width: "w-[80%]",
-    },
-    {
-      name: "Plumbing",
-      percent: "70%",
-      width: "w-[70%]",
-    },
-    {
-      name: "Electrician",
-      percent: "65%",
-      width: "w-[65%]",
-    },
-    {
-      name: "Machine Repair",
-      percent: "55%",
-      width: "w-[55%]",
+      title: "Total Enterprises",
+      value: users?.totalEnterprises || 0,
+      icon: <Building2 size={28} />,
     },
   ];
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Heading */}
+      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-
-        <p className="text-gray-500 mt-1">Welcome back Admin 👋</p>
+        <p className="text-gray-500 mt-1">
+          {loading ? "Loading data..." : "Welcome back Admin"}
+        </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
         {stats.map((item, index) => (
           <div
             key={index}
-            className={`bg-gradient-to-r ${item.color} text-white rounded-2xl p-5 shadow-lg hover:scale-105 transition duration-300`}
+            className="bg-red-400 text-white rounded-2xl p-5 shadow-lg hover:-translate-y-1 transition"
           >
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm opacity-90">{item.title}</p>
-
-                <h2 className="text-3xl font-bold mt-2">{item.value}</h2>
+                <p className="text-sm text-white/80">{item.title}</p>
+                <h2 className="text-3xl font-bold mt-2">
+                  <AnimatedValue end={item.value} />
+                </h2>
               </div>
 
               <div className="bg-white/20 p-3 rounded-xl">{item.icon}</div>
@@ -117,22 +131,18 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Middle Section */}
+      {/* MIDDLE SECTION */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-        {/* Recent Bookings */}
+        {/* BOOKINGS */}
         <div className="xl:col-span-2 bg-white rounded-2xl shadow p-5">
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-xl font-semibold">Recent Bookings</h2>
+          <h2 className="text-xl font-semibold mb-5">Recent Bookings</h2>
 
-            <button className="text-sm text-indigo-600 font-medium">
-              View All
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
+          {bookings.length === 0 ? (
+            <p className="text-gray-500">No bookings found</p>
+          ) : (
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b">
+                <tr>
                   <th className="pb-3">Customer</th>
                   <th className="pb-3">Service</th>
                   <th className="pb-3">Technician</th>
@@ -141,129 +151,105 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {bookings.map((booking, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="py-4">{booking.customer}</td>
-
-                    <td>{booking.service}</td>
-
-                    <td>{booking.technician}</td>
-
+                {bookings.map((b, i) => (
+                  <tr key={i} className="hover:bg-gray-50">
+                    <td className="py-4">{b.customer}</td>
+                    <td>{b.service}</td>
+                    <td>{b.technician}</td>
                     <td>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          booking.status === "Completed"
+                          b.status === "Completed"
                             ? "bg-green-100 text-green-600"
-                            : booking.status === "Pending"
+                            : b.status === "Pending"
                               ? "bg-yellow-100 text-yellow-600"
                               : "bg-blue-100 text-blue-600"
                         }`}
                       >
-                        {booking.status}
+                        {b.status}
                       </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          )}
         </div>
 
-        {/* Technician Activity */}
+        {/* TECHNICIAN STATUS */}
         <div className="bg-white rounded-2xl shadow p-5">
           <h2 className="text-xl font-semibold mb-5">Technician Status</h2>
 
-          <div className="space-y-4">
-            {[
-              {
-                name: "Aman",
-                status: "On Job",
-                color: "bg-green-500",
-              },
-              {
-                name: "Ravi",
-                status: "Available",
-                color: "bg-blue-500",
-              },
-              {
-                name: "Mohit",
-                status: "Offline",
-                color: "bg-red-500",
-              },
-            ].map((tech, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b pb-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-
-                  <div>
-                    <h3 className="font-medium">{tech.name}</h3>
-
-                    <p className="text-sm text-gray-500">Technician</p>
-                  </div>
+          {[
+            { name: "Aman", status: "On Job", color: "green" },
+            { name: "Ravi", status: "Available", color: "blue" },
+            { name: "Mohit", status: "Offline", color: "red" },
+          ].map((t, i) => (
+            <div key={i} className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+                <div>
+                  <h3 className="font-medium">{t.name}</h3>
+                  <p className="text-sm text-gray-500">Technician</p>
                 </div>
-
-                <span
-                  className={`text-white text-xs px-3 py-1 rounded-full ${tech.color}`}
-                >
-                  {tech.status}
-                </span>
               </div>
-            ))}
-          </div>
+
+              <span
+                className={`text-xs px-3 py-1 rounded-full font-medium ${
+                  t.color === "green"
+                    ? "bg-green-100 text-green-700"
+                    : t.color === "blue"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-red-100 text-red-700"
+                }`}
+              >
+                {t.status}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Bottom Section */}
+      {/* BOTTOM SECTION */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Popular Services */}
+        {/* SERVICES */}
         <div className="bg-white rounded-2xl shadow p-5">
-          <div className="flex items-center gap-2 mb-5">
-            <Wrench className="text-indigo-600" />
+          <h2 className="text-xl font-semibold mb-5">Popular Services</h2>
 
-            <h2 className="text-xl font-semibold">Popular Services</h2>
-          </div>
-
-          <div className="space-y-5">
-            {services.map((service, index) => (
-              <div key={index}>
+          {services.length === 0 ? (
+            <p className="text-gray-500">No services found</p>
+          ) : (
+            services.map((s, i) => (
+              <div key={i} className="mb-5">
                 <div className="flex justify-between mb-2">
-                  <span>{service.name}</span>
-
-                  <span>{service.percent}</span>
+                  <span>{s.name}</span>
+                  <span>{s.percent}</span>
                 </div>
 
                 <div className="w-full h-3 bg-gray-200 rounded-full">
                   <div
-                    className={`h-3 rounded-full bg-indigo-600 ${service.width}`}
-                  ></div>
+                    className="h-3 bg-indigo-600 rounded-full"
+                    style={{ width: s.percent }}
+                  />
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
 
-        {/* Customer Reviews */}
+        {/* REVIEWS */}
         <div className="bg-white rounded-2xl shadow p-5">
-          <div className="flex items-center gap-2 mb-5">
-            <Star className="text-yellow-500 fill-yellow-500" />
+          <h2 className="text-xl font-semibold mb-5">Customer Reviews</h2>
 
-            <h2 className="text-xl font-semibold">Customer Reviews</h2>
-          </div>
-
-          <div className="space-y-4">
-            {[
-              "Excellent AC repair service 👌",
-              "Very fast plumbing support 🚿",
-              "Affordable pricing and good staff ⭐",
-            ].map((review, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-xl border">
-                <p className="text-gray-700">{review}</p>
+          {reviews.length === 0 ? (
+            <p className="text-gray-500">No reviews found</p>
+          ) : (
+            reviews.map((r, i) => (
+              <div key={i} className="p-4 bg-gray-50 rounded-xl border mb-3">
+                <p>{r.message || r}</p>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>

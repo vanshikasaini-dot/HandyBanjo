@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Lock, Sparkles } from "lucide-react";
+import { Mail, Lock, Sparkles, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../Apis/authService";
 import AuthPopup from "../../components/Model/AuthPopup";
@@ -10,7 +10,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const [popup, setPopup] = useState({
     isOpen: false,
     type: "",
@@ -73,9 +73,9 @@ export default function Login() {
         <div className="absolute inset-0 bg-black/50"></div>
 
         <div className="relative z-20 w-full max-w-[420px] rounded-[30px] border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl p-6 sm:p-8">
-          <div className="mx-auto mb-6 flex items-center justify-center w-[75px] h-[75px] rounded-[25px] bg-red-500 text-white">
-            <Sparkles size={38} />
-          </div>
+          <h2 className="text-white text-[20px] font-bold text-center mb-[10px] ">
+            <span className="text-red-500">Handy </span>Banjo
+          </h2>
 
           <h2 className="text-center text-white font-bold text-3xl">
             Welcome Back
@@ -108,25 +108,31 @@ export default function Login() {
             <div className="mb-6">
               <label className="text-white mb-2 block">Password</label>
 
-              <div className="flex items-center rounded-xl overflow-hidden bg-white/20 border border-white/20">
+              <div className="flex items-center rounded-xl bg-white/20 border border-white/20">
                 <span className="px-4 text-white">
                   <Lock size={18} />
                 </span>
 
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter password"
-                  className="w-full h-[50px] bg-transparent outline-none text-white placeholder:text-gray-300 px-2"
+                  className="flex-1 h-[50px] bg-transparent outline-none text-white placeholder:text-gray-300 px-2 appearance-none"
                 />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="px-4 text-white cursor-pointer select-none"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </span>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full h-[52px] rounded-[14px] font-bold text-white bg-red-500 hover:bg-red-600 transition"
+              className="w-full h-[52px] rounded-[14px] font-bold text-white bg-red-500 hover:bg-red-600 transition cursor-pointer"
             >
               Login
             </button>

@@ -124,20 +124,19 @@ export function UpdateHelperModal({ isOpen, onClose, worker, onUpdate }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
+    const data = new FormData();
 
-    formData.append("fullName", fullName);
-    formData.append("phone", phone);
-    formData.append("experience", experience);
-    formData.append("hourlyRate", hourlyRate);
+    data.append("fullName", fullName);
+    data.append("phone", phone);
+    data.append("experience", experience);
+    data.append("hourlyRate", hourlyRate);
 
     if (profileImage) {
-      formData.append("profileImage", profileImage);
+      data.append("profileImage", profileImage); // check backend name
     }
 
-    onUpdate(formData);
+    onUpdate(data);
   };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <motion.div
@@ -216,7 +215,7 @@ export function UpdateHelperModal({ isOpen, onClose, worker, onUpdate }) {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-green-500 py-3 font-semibold text-white"
+            className="w-full rounded-xl bg-green-500 py-3 font-semibold text-white cursor-pointer"
           >
             Update Helper
           </button>

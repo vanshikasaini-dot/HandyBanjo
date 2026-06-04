@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { getAllCustomer } from "../../Apis/customer";
 import {
   Search,
   Eye,
@@ -14,221 +15,36 @@ import {
 
 export default function Customers() {
   const [search, setSearch] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const [totalPages, setTotalPages] = useState(1);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+useEffect(() => {
+  fetchCustomers(currentPage);
+}, [currentPage]);
 
-  const customers = [
-    {
-      id: 1,
-      name: "Rahul Sharma",
-      email: "rahul@gmail.com",
-      phone: "9876543210",
-      city: "Delhi",
-      bookings: 5,
-      status: "Active",
-      joinDate: "12 May 2026",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
+const fetchCustomers = async (page) => {
+  try {
+    setLoading(true);
 
-    {
-      id: 2,
-      name: "Priya Verma",
-      email: "priya@gmail.com",
-      phone: "9876543211",
-      city: "Mumbai",
-      bookings: 2,
-      status: "Blocked",
-      joinDate: "20 Apr 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
+    const response = await getAllCustomer(page);
 
-    {
-      id: 3,
-      name: "Aman Singh",
-      email: "aman@gmail.com",
-      phone: "9876543212",
-      city: "Noida",
-      bookings: 8,
-      status: "Pending",
-      joinDate: "01 Mar 2026",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-    },
-    {
-      id: 4,
-      name: "Rohit Kumar",
-      email: "rohit@gmail.com",
-      phone: "9876543213",
-      city: "Jaipur",
-      bookings: 4,
-      status: "Active",
-      joinDate: "10 Apr 2026",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-    {
-      id: 5,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 6,
-      name: "Rohit Kumar",
-      email: "rohit@gmail.com",
-      phone: "9876543213",
-      city: "Jaipur",
-      bookings: 4,
-      status: "Active",
-      joinDate: "10 Apr 2026",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-    {
-      id: 7,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 8,
-      name: "Rohit Kumar",
-      email: "rohit@gmail.com",
-      phone: "9876543213",
-      city: "Jaipur",
-      bookings: 4,
-      status: "Active",
-      joinDate: "10 Apr 2026",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-    {
-      id: 9,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 10,
-      name: "Rohit Kumar",
-      email: "rohit@gmail.com",
-      phone: "9876543213",
-      city: "Jaipur",
-      bookings: 4,
-      status: "Active",
-      joinDate: "10 Apr 2026",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-    },
-    {
-      id: 11,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 12,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 13,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 14,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 15,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 16,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 17,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-    {
-      id: 18,
-      name: "Neha Gupta",
-      email: "neha@gmail.com",
-      phone: "9876543214",
-      city: "Pune",
-      bookings: 7,
-      status: "Pending",
-      joinDate: "15 Mar 2026",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-    },
-  ];
+    console.log("CUSTOMERS =>", response);
 
-  const filteredCustomers = customers.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()),
-  );
-  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentCustomers = filteredCustomers.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
+    setCustomers(response?.data || []);
+
+    setTotalPages(
+      response?.pagination?.totalPages ||
+      response?.totalPages ||
+      1
+    );
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -246,21 +62,19 @@ export default function Customers() {
   const cards = [
     {
       title: "Total Customers",
-      value: "120",
+      value: customers.length,
       icon: <Users className="text-blue-600" size={26} />,
       bg: "bg-blue-100",
     },
-
     {
       title: "Active Customers",
-      value: "95",
+      value: customers.length,
       icon: <UserCheck className="text-green-600" size={26} />,
       bg: "bg-green-100",
     },
-
     {
       title: "Blocked Customers",
-      value: "25",
+      value: 0,
       icon: <UserX className="text-red-600" size={26} />,
       bg: "bg-red-100",
     },
@@ -336,16 +150,14 @@ export default function Customers() {
       >
         <div>
           <table className="w-full">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-100 text-center">
               <tr>
                 {[
-                  "Customer",
+                  "Profile",
+                  "Full Name",
                   "Email",
-                  "Phone",
-                  "City",
-                  "Bookings",
-                  "Status",
-                  "Join Date",
+                  "Phone Number",
+                  "State",
                   "Actions",
                 ].map((heading, index) => (
                   <th
@@ -359,9 +171,9 @@ export default function Customers() {
             </thead>
 
             <tbody>
-              {currentCustomers.map((item, index) => (
+              {customers.map((item, index) => (
                 <motion.tr
-                  key={item.id}
+                  key={item._id}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{
@@ -370,55 +182,30 @@ export default function Customers() {
                   }}
                   className="border-b transition hover:bg-gray-50"
                 >
-                  {/* Customer */}
                   <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-11 w-11 rounded-full object-cover"
-                      />
+                    <img
+                      src={item.profilePic || "https://via.placeholder.com/150"}
+                      alt={item.firstName}
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                  </td>
 
-                      <div>
-                        <h3 className="text-sm font-semibold text-gray-800">
-                          {item.name}
-                        </h3>
-                      </div>
-                    </div>
+                  <td className="px-5 py-4 text-sm font-medium text-gray-800">
+                    {item.firstName} {item.lastName}
                   </td>
 
                   <td className="px-5 py-4 text-sm text-gray-600">
-                    {item.email}
+                    {item.email || "N/A"}
                   </td>
 
                   <td className="px-5 py-4 text-sm text-gray-600">
-                    {item.phone}
+                    {item.phoneNumber || "N/A"}
                   </td>
 
                   <td className="px-5 py-4 text-sm text-gray-600">
-                    {item.city}
+                    {item.state || "N/A"}
                   </td>
 
-                  <td className="px-5 py-4 text-sm text-gray-600">
-                    {item.bookings}
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-5 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
-                        item.status,
-                      )}`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-
-                  <td className="px-5 py-4 text-sm text-gray-600">
-                    {item.joinDate}
-                  </td>
-
-                  {/* Actions */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
                       <motion.button
@@ -450,145 +237,141 @@ export default function Customers() {
               ))}
             </tbody>
           </table>
-        <div className="flex justify-end items-center gap-2 p-4 border-t bg-white">
+          <div className="flex justify-end items-center gap-2 p-4 border-t bg-white">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
+            >
+              <ChevronLeft size={18} />
+            </button>
 
-  <button
-    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-    disabled={currentPage === 1}
-    className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
-  >
-    <ChevronLeft size={18} />
-  </button>
-
-  {Array.from({ length: totalPages }, (_, index) => (
-    <button
-      key={index}
-      onClick={() => setCurrentPage(index + 1)}
-      className={`w-10 h-10 rounded-lg font-medium transition
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`w-10 h-10 rounded-lg font-medium transition
         ${
           currentPage === index + 1
             ? "bg-blue-500 text-white"
             : "bg-white border hover:bg-blue-100"
         }`}
-    >
-      {index + 1}
-    </button>
-  ))}
+              >
+                {index + 1}
+              </button>
+            ))}
 
-  <button
-    onClick={() =>
-      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-    }
-    disabled={currentPage === totalPages}
-    className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
-  >
-    <ChevronRight size={18} />
-  </button>
-
-</div>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
       </motion.div>
 
       {/* Mobile Cards */}
-      <div className="grid gap-4 lg:hidden">
-        {filteredCustomers.map((item, index) => (
-          <motion.tr
-            key={item.id}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.1,
-            }}
-            className="border-b transition hover:bg-gray-50"
-          >
-            {/* Top */}
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-14 w-14 rounded-full object-cover"
-                />
+    <div className="grid gap-4 lg:hidden">
+  {customers.map((item, index) => (
+    <motion.div
+      key={item._id}
+      initial={{ opacity: 0, x: -30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.1,
+      }}
+      className="bg-white rounded-3xl p-4 shadow-sm"
+    >
+      {/* Top */}
+      <div className="flex items-center gap-3">
+        <img
+          src={item.profilePic || "https://via.placeholder.com/150"}
+          alt={item.firstName}
+          className="h-14 w-14 rounded-full object-cover"
+        />
 
-                <div>
-                  <h3 className="font-semibold text-gray-800">{item.name}</h3>
+        <div>
+          <h3 className="font-semibold text-gray-800">
+            {item.firstName} {item.lastName}
+          </h3>
 
-                  <p className="text-sm text-gray-500">{item.email}</p>
-                </div>
-              </div>
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
-                  item.status,
-                )}`}
-              >
-                {item.status}
-              </span>
-            </div>
-
-            {/* Details */}
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-gray-500">Phone</p>
-
-                <h4 className="font-medium text-gray-800">{item.phone}</h4>
-              </div>
-
-              <div>
-                <p className="text-gray-500">City</p>
-
-                <h4 className="font-medium text-gray-800">{item.city}</h4>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Bookings</p>
-
-                <h4 className="font-medium text-gray-800">{item.bookings}</h4>
-              </div>
-
-              <div>
-                <p className="text-gray-500">Join Date</p>
-
-                <h4 className="font-medium text-gray-800">{item.joinDate}</h4>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="mt-4 flex items-center gap-2">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex-1 rounded-2xl bg-blue-100 py-2 transition hover:bg-blue-200"
-              >
-                <div className="flex items-center justify-center gap-2 text-blue-600">
-                  <Eye size={16} />
-                </div>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex-1 rounded-2xl bg-green-100 py-2 transition hover:bg-green-200"
-              >
-                <div className="flex items-center justify-center gap-2 text-green-600">
-                  <Pencil size={16} />
-                </div>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex-1 rounded-2xl bg-red-100 py-2 transition hover:bg-red-200"
-              >
-                <div className="flex items-center justify-center gap-2 text-red-600">
-                  <Trash2 size={16} />
-                </div>
-              </motion.button>
-            </div>
-          </motion.tr>
-        ))}
+          <p className="text-sm text-gray-500">
+            {item.email || "N/A"}
+          </p>
+        </div>
       </div>
+
+      {/* Details */}
+      <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <p className="text-gray-500">Phone Number</p>
+          <h4 className="font-medium text-gray-800">
+            {item.phoneNumber || "N/A"}
+          </h4>
+        </div>
+
+        <div>
+          <p className="text-gray-500">State</p>
+          <h4 className="font-medium text-gray-800">
+            {item.state || "N/A"}
+          </h4>
+        </div>
+
+        <div>
+          <p className="text-gray-500">Email</p>
+          <h4 className="font-medium text-gray-800 break-all">
+            {item.email || "N/A"}
+          </h4>
+        </div>
+
+        <div>
+          <p className="text-gray-500">Full Name</p>
+          <h4 className="font-medium text-gray-800">
+            {item.firstName} {item.lastName}
+          </h4>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-4 flex items-center gap-2">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex-1 rounded-2xl bg-blue-100 py-2 transition hover:bg-blue-200"
+        >
+          <div className="flex items-center justify-center gap-2 text-blue-600">
+            <Eye size={16} />
+          </div>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex-1 rounded-2xl bg-green-100 py-2 transition hover:bg-green-200"
+        >
+          <div className="flex items-center justify-center gap-2 text-green-600">
+            <Pencil size={16} />
+          </div>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex-1 rounded-2xl bg-red-100 py-2 transition hover:bg-red-200"
+        >
+          <div className="flex items-center justify-center gap-2 text-red-600">
+            <Trash2 size={16} />
+          </div>
+        </motion.button>
+      </div>
+    </motion.div>
+  ))}
+</div>
     </div>
   );
 }

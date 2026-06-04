@@ -9,10 +9,9 @@ import Dashboard from "./Pages/Dashboard";
 
 import Customers from "./Pages/UsersManagement/Customers";
 import Category from "./Pages/UsersManagement/Category";
-import ServiceProviders from "./Pages/UsersManagement/ServiceProviders";
+import Pro from "./Pages/UsersManagement/Pro";
 import HelperWorker from "./Pages/UsersManagement/HelperWorker";
 import EnterpriseClient from "./Pages/UsersManagement/EnterpriseClient";
-import BlockedUser from "./Pages/UsersManagement/BlockedUser";
 import VerificationRequest from "./Pages/UsersManagement/VarificationRequest";
 import AcService from "./Pages/ServiceManagement/AcService";
 import Plumbing from "./Pages/ServiceManagement/Plumbing";
@@ -31,6 +30,7 @@ import AllTechnicians from "./Pages/TechnicianManagement/AllTechnican";
 import Documents from "./Pages/TechnicianManagement/Documents";
 import AvailblityStatus from "./Pages/TechnicianManagement/AvailabilityStatus";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import AllUsers from "./Pages/UsersManagement/AllUsers";
 
 export default function App() {
   return (
@@ -52,10 +52,10 @@ export default function App() {
         <Route path="users">
           <Route path="customers" element={<Customers />} />
           <Route path="category" element={<Category />} />
-          <Route path="service-providers" element={<ServiceProviders />} />
+          <Route path="pro" element={<Pro />} />
+          <Route path="allusers" element={<AllUsers />} />
           <Route path="helpers" element={<HelperWorker />} />
           <Route path="enterprise" element={<EnterpriseClient />} />
-          <Route path="blocked" element={<BlockedUser />} />
           <Route path="verification" element={<VerificationRequest />} />
           <Route path="ac" element={<AcService />} />
         </Route>

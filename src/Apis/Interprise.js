@@ -3,7 +3,7 @@
 import axiosInstance from "./Interceptor/axiosInstance";
 
 export const getAllEnterprises = async () => {
-  const response = await axiosInstance.get("/enterprise/all");
+  const response = await axiosInstance.get("/dashboard/enterprises");
   return response.data;
 };
 
@@ -21,7 +21,13 @@ export const deleteEnterprise = async (id) => {
 export const updateEnterprise = async (id, data) => {
   const response = await axiosInstance.put(
     `/enterprise/updateById/${id}`,
-    data
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
+
   return response.data;
 };

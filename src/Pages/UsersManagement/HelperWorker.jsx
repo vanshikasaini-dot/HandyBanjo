@@ -75,14 +75,21 @@ export default function HelperWorkers() {
   );
   const handleUpdate = async (formData) => {
     try {
-      await updateHelperById(selectedWorker._id, formData);
+      console.log("UPDATING ID:", selectedWorker._id);
+
+      for (let pair of formData.entries()) {
+        console.log("FORMDATA =>", pair[0], pair[1]);
+      }
+
+      const res = await updateHelperById(selectedWorker._id, formData);
+
+      console.log("UPDATE RESPONSE =>", res);
 
       fetchWorkers();
-
       setEditModal(false);
       setSelectedWorker(null);
     } catch (error) {
-      console.log(error);
+      console.log("UPDATE ERROR =>", error);
     }
   };
   const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);

@@ -1,13 +1,7 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, XCircle, X } from "lucide-react";
 
-export default function AuthPopup({
-  isOpen,
-  type,
-  title,
-  message,
-  onClose,
-}) {
+export default function AuthPopup({ isOpen, type, title, message, onClose }) {
   if (!isOpen) return null;
 
   return (
@@ -20,7 +14,6 @@ export default function AuthPopup({
         initial={{ scale: 0.7, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{
-          duration: 0.4,
           type: "spring",
           stiffness: 120,
         }}
@@ -29,16 +22,14 @@ export default function AuthPopup({
         {/* Top Border */}
         <div
           className={`absolute top-0 left-0 w-full h-1 ${
-            type === "success"
-              ? "bg-green-400"
-              : "bg-red-400"
+            type === "success" ? "bg-green-400" : "bg-red-400"
           }`}
         />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-white/70 hover:text-white transition"
+          className="absolute top-5 right-5 text-white/70 hover:text-white transition cursor-pointer"
         >
           <X size={24} />
         </button>
@@ -48,24 +39,15 @@ export default function AuthPopup({
           <motion.div
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
             className="flex items-center justify-center gap-3 mb-4"
           >
             {type === "success" ? (
-              <CheckCircle2
-                size={34}
-                className="text-green-400"
-              />
+              <CheckCircle2 size={34} className="text-green-400" />
             ) : (
-              <XCircle
-                size={34}
-                className="text-red-400"
-              />
+              <XCircle size={34} className="text-red-400" />
             )}
 
-            <h2 className="text-3xl font-bold text-white">
-              {title}
-            </h2>
+            <h2 className="text-3xl font-bold text-white">{title}</h2>
           </motion.div>
 
           {/* Message */}
