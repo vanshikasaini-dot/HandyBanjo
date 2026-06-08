@@ -25,7 +25,7 @@ import {
 export default function Category() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,20 +33,18 @@ export default function Category() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-
   useEffect(() => {
     fetchCategories();
-  }, []);
-
+  }, [currentPage]);
   const fetchCategories = async () => {
     try {
-      const response = await getAllCategories();
+      const response = await getAllCategories(currentPage, 5);
 
-      console.log("Category API =>", response);
+      setCategories(response.data.data);
 
-      setCategories(response?.data || []);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
-      console.log("Category Error:", error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -101,14 +99,6 @@ export default function Category() {
     }
   };
 
-  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  const currentCategories = filteredCategories.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[400px]">
@@ -174,11 +164,10 @@ export default function Category() {
             </div>
           </motion.div>
         </div>
-
-        <motion.div className="bg-white rounded-3xl shadow-sm p-4 mb-6 flex flex-col lg:flex-row gap-4 lg:justify-between">
+        <motion.div className="bg-white rounded-3xl shadow-sm p-4 mb-6">
+          {/* SEARCH */}
           <div className="flex items-center gap-2 bg-gray-100 px-4 py-3 rounded-2xl w-full lg:w-[350px]">
             <Search size={18} />
-
             <input
               type="text"
               placeholder="Search..."
@@ -201,7 +190,7 @@ export default function Category() {
             </thead>
 
             <tbody>
-              {currentCategories.map((item) => (
+              {categories.map((item) => (
                 <tr key={item.id} className="border-t hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <img
@@ -241,7 +230,7 @@ export default function Category() {
         </div>
         {/* Mobile view */}
         <div className="grid grid-cols-1 gap-4 lg:hidden mt-4">
-          {currentCategories.map((item) => (
+          {categories.map((item) => (
             <div key={item.id} className="bg-white rounded-3xl shadow-sm p-4">
               <div className="flex items-center gap-3 mb-3">
                 <img src={item.image} alt="" className="w-14 h-14 rounded-xl" />

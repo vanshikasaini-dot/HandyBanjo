@@ -33,23 +33,22 @@ export default function HelperWorkers() {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
   const [viewModal, setViewModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [editModal, setEditModal] = useState(false);
+
   useEffect(() => {
     fetchWorkers();
-  }, []);
+  }, [currentPage]);
 
   const fetchWorkers = async () => {
     try {
-      const response = await getAllHelpers();
-
-      console.log("Full Response =>", response);
-      console.log("Response Data =>", response.data);
+      const response = await getAllHelpers(currentPage, 10);
 
       setWorkers(response?.data || []);
+      setTotalPages(response?.pagination?.totalPages || 1);
     } catch (error) {
       console.log(error);
     } finally {
@@ -57,6 +56,7 @@ export default function HelperWorkers() {
     }
   };
   const handleDelete = async () => {
+    a;
     try {
       await deleteHelperById(selectedWorker._id);
 
@@ -92,15 +92,7 @@ export default function HelperWorkers() {
       console.log("UPDATE ERROR =>", error);
     }
   };
-  const totalPages = Math.ceil(filteredWorkers.length / itemsPerPage);
 
-  const indexOfLastWorker = currentPage * itemsPerPage;
-  const indexOfFirstWorker = indexOfLastWorker - itemsPerPage;
-
-  const currentWorkers = filteredWorkers.slice(
-    indexOfFirstWorker,
-    indexOfLastWorker,
-  );
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-100 p-4 sm:p-6">
       {/* Header */}
@@ -212,7 +204,7 @@ export default function HelperWorkers() {
             </thead>
 
             <tbody>
-              {currentWorkers.map((worker, index) => (
+              {filteredWorkers.map((worker, index) => (
                 <motion.tr
                   key={worker._id}
                   initial={{ opacity: 0, x: -30 }}
@@ -305,7 +297,7 @@ export default function HelperWorkers() {
 
       {/* Mobile Cards */}
       <div className="mt-6 grid grid-cols-1 gap-5 xl:hidden">
-        {currentWorkers.map((worker, index) => (
+        {filteredWorkers.map((worker, index) => (
           <motion.div
             key={worker._id}
             initial={{ opacity: 0, y: 35 }}

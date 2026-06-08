@@ -2,11 +2,13 @@
 
 import axiosInstance from "./Interceptor/axiosInstance";
 
-export const getAllEnterprises = async () => {
-  const response = await axiosInstance.get("/dashboard/enterprises");
+export const getAllEnterprises = async (page = 1, limit = 10) => {
+  const response = await axiosInstance.get(
+    `/dashboard/enterprises?page=${page}&limit=${limit}`
+  );
+
   return response.data;
 };
-
 
 export const getEnterpriseById = async (id) => {
   const response = await axiosInstance.get(`/enterprise/getById/${id}`);

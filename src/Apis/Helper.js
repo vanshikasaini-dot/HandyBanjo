@@ -1,10 +1,12 @@
 import axiosInstance from "./Interceptor/axiosInstance";
 
-export const getAllHelpers = async () => {
-  const response = await axiosInstance.get("/dashboard/helpers");
+export const getAllHelpers = async (page = 1, limit = 10) => {
+  const response = await axiosInstance.get(
+    `/dashboard/helpers?page=${page}&limit=${limit}`
+  );
+
   return response.data;
 };
-
 export const getHelperById = async (id) => {
   const response = await axiosInstance.get(`/helper/getById/${id}`);
   return response.data;

@@ -15,48 +15,54 @@ import {
 
 export default function Customers() {
   const [search, setSearch] = useState("");
-
+  const [showFilter, setShowFilter] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
 useEffect(() => {
-  fetchCustomers(currentPage);
-}, [currentPage]);
+  fetchCustomers();
+}, [currentPage, search]);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".filter-box")) {
+        setShowFilter(false);
+      }
+    };
 
-const fetchCustomers = async (page) => {
-  try {
-    setLoading(true);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    const response = await getAllCustomer(page);
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true);
 
-    console.log("CUSTOMERS =>", response);
+      const response = await getAllCustomer(currentPage, 10);
 
-    setCustomers(response?.data || []);
+      let data = response?.data || [];
 
-    setTotalPages(
-      response?.pagination?.totalPages ||
-      response?.totalPages ||
-      1
-    );
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-};
+      // NAME FILTER (search by firstName + lastName)
+      if (search.trim()) {
+        data = data.filter((item) =>
+          `${item.firstName} ${item.lastName}`
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+        );
+      }
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Active":
-        return "bg-green-100 text-green-700";
-
-      case "Blocked":
-        return "bg-red-100 text-red-700";
-
-      default:
-        return "bg-yellow-100 text-yellow-700";
+      setCustomers(data);
+      setTotalPages(response?.pagination?.totalPages || 1);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  };
+  const handleFilter = (e) => {
+    e.stopPropagation();
+    setShowFilter(!showFilter);
   };
 
   const cards = [
@@ -137,6 +143,36 @@ const fetchCustomers = async (page) => {
               onChange={(e) => setSearch(e.target.value)}
               className="h-12 w-full rounded-2xl border border-gray-200 bg-gray-50 pl-11 pr-4 outline-none transition-all focus:border-blue-500"
             />
+          </div>
+
+          <div className="relative  filter-box">
+            <button
+              onClick={handleFilter}
+              className="bg-red-400 text-white px-4 py-2 rounded-xl cursor-pointer"
+            >
+              Filter
+            </button>
+            {showFilter && (
+              <div className="absolute right-0 top-14 z-50 w-56 rounded-2xl bg-white shadow-lg border p-2">
+                {filters.map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      setFilter(item);
+                      setCurrentPage(1);
+                      setShowFilter(false);
+                    }}
+                    className={`w-full rounded-xl px-4 py-3 text-left ${
+                      filter === item
+                        ? "bg-red-500 text-white"
+                        : "hover:bg-red-50"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
@@ -237,141 +273,138 @@ const fetchCustomers = async (page) => {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-end items-center gap-2 p-4 border-t bg-white">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
-            >
-              <ChevronLeft size={18} />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`w-10 h-10 rounded-lg font-medium transition
-        ${
-          currentPage === index + 1
-            ? "bg-blue-500 text-white"
-            : "bg-white border hover:bg-blue-100"
-        }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className="w-10 h-10 flex items-center justify-center rounded-lg border bg-white hover:bg-blue-500 hover:text-white transition disabled:opacity-50"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
         </div>
       </motion.div>
 
       {/* Mobile Cards */}
-    <div className="grid gap-4 lg:hidden">
-  {customers.map((item, index) => (
-    <motion.div
-      key={item._id}
-      initial={{ opacity: 0, x: -30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.1,
-      }}
-      className="bg-white rounded-3xl p-4 shadow-sm"
-    >
-      {/* Top */}
-      <div className="flex items-center gap-3">
-        <img
-          src={item.profilePic || "https://via.placeholder.com/150"}
-          alt={item.firstName}
-          className="h-14 w-14 rounded-full object-cover"
-        />
+      <div className="grid gap-4 lg:hidden">
+        {customers.map((item, index) => (
+          <motion.div
+            key={item._id}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.1,
+            }}
+            className="bg-white rounded-3xl p-4 shadow-sm"
+          >
+            {/* Top */}
+            <div className="flex items-center gap-3">
+              <img
+                src={item.profilePic || "https://via.placeholder.com/150"}
+                alt={item.firstName}
+                className="h-14 w-14 rounded-full object-cover"
+              />
 
-        <div>
-          <h3 className="font-semibold text-gray-800">
-            {item.firstName} {item.lastName}
-          </h3>
+              <div>
+                <h3 className="font-semibold text-gray-800">
+                  {item.firstName} {item.lastName}
+                </h3>
 
-          <p className="text-sm text-gray-500">
-            {item.email || "N/A"}
-          </p>
-        </div>
+                <p className="text-sm text-gray-500">{item.email || "N/A"}</p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">Phone Number</p>
+                <h4 className="font-medium text-gray-800">
+                  {item.phoneNumber || "N/A"}
+                </h4>
+              </div>
+
+              <div>
+                <p className="text-gray-500">State</p>
+                <h4 className="font-medium text-gray-800">
+                  {item.state || "N/A"}
+                </h4>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Email</p>
+                <h4 className="font-medium text-gray-800 break-all">
+                  {item.email || "N/A"}
+                </h4>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Full Name</p>
+                <h4 className="font-medium text-gray-800">
+                  {item.firstName} {item.lastName}
+                </h4>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-4 flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-blue-100 py-2 transition hover:bg-blue-200"
+              >
+                <div className="flex items-center justify-center gap-2 text-blue-600">
+                  <Eye size={16} />
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-green-100 py-2 transition hover:bg-green-200"
+              >
+                <div className="flex items-center justify-center gap-2 text-green-600">
+                  <Pencil size={16} />
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex-1 rounded-2xl bg-red-100 py-2 transition hover:bg-red-200"
+              >
+                <div className="flex items-center justify-center gap-2 text-red-600">
+                  <Trash2 size={16} />
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+        ))}
       </div>
+      <div className="mt-6 flex items-center justify-end gap-3 pr-[30px]">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronLeft size={18} />
+        </button>
 
-      {/* Details */}
-      <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <p className="text-gray-500">Phone Number</p>
-          <h4 className="font-medium text-gray-800">
-            {item.phoneNumber || "N/A"}
-          </h4>
-        </div>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`h-10 w-10 rounded-xl border font-semibold transition-all duration-200 ${
+              currentPage === index + 1
+                ? "border-red-600 bg-red-500/30 text-red-700 shadow-md scale-105"
+                : "border-red-500 bg-red-500/10 text-red-600 hover:bg-red-500/20 hover:scale-105"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
 
-        <div>
-          <p className="text-gray-500">State</p>
-          <h4 className="font-medium text-gray-800">
-            {item.state || "N/A"}
-          </h4>
-        </div>
-
-        <div>
-          <p className="text-gray-500">Email</p>
-          <h4 className="font-medium text-gray-800 break-all">
-            {item.email || "N/A"}
-          </h4>
-        </div>
-
-        <div>
-          <p className="text-gray-500">Full Name</p>
-          <h4 className="font-medium text-gray-800">
-            {item.firstName} {item.lastName}
-          </h4>
-        </div>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500/10 text-red-600 shadow-sm transition-all duration-200 hover:bg-red-500/20 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <ChevronRight size={18} />
+        </button>
       </div>
-
-      {/* Actions */}
-      <div className="mt-4 flex items-center gap-2">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-          className="flex-1 rounded-2xl bg-blue-100 py-2 transition hover:bg-blue-200"
-        >
-          <div className="flex items-center justify-center gap-2 text-blue-600">
-            <Eye size={16} />
-          </div>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-          className="flex-1 rounded-2xl bg-green-100 py-2 transition hover:bg-green-200"
-        >
-          <div className="flex items-center justify-center gap-2 text-green-600">
-            <Pencil size={16} />
-          </div>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-          className="flex-1 rounded-2xl bg-red-100 py-2 transition hover:bg-red-200"
-        >
-          <div className="flex items-center justify-center gap-2 text-red-600">
-            <Trash2 size={16} />
-          </div>
-        </motion.button>
-      </div>
-    </motion.div>
-  ))}
-</div>
     </div>
   );
 }

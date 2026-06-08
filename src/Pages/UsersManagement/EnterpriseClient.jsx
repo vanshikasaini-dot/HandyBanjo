@@ -34,13 +34,13 @@ export default function Enterprises() {
   const [loading, setLoading] = useState(true);
   const totalEnterprises = enterprises.length;
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEnterprise, setSelectedEnterprise] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedEnterpriseEdit, setSelectedEnterpriseEdit] = useState(null);
-  const itemsPerPage = 5;
 
   const activeEnterprises = enterprises.length;
   const profileCreated = enterprises.filter(
@@ -53,17 +53,16 @@ export default function Enterprises() {
 
   useEffect(() => {
     fetchEnterprises();
-  }, []);
+  }, [currentPage]);
 
   const fetchEnterprises = async () => {
     try {
-      const data = await getAllEnterprises();
+      const response = await getAllEnterprises(currentPage, 10);
 
-      console.log("API Response =>", data);
-
-      setEnterprises(data?.data || []);
+      setEnterprises(response?.data || []);
+      setTotalPages(response?.pagination?.totalPages || 1);
     } catch (error) {
-      console.log("Error fetching enterprises:", error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -151,14 +150,7 @@ export default function Enterprises() {
       .toLowerCase()
       .includes(search.toLowerCase()),
   );
-  const totalPages = Math.ceil(filteredEnterprises.length / itemsPerPage);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  const paginatedEnterprises = filteredEnterprises.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
   return (
     <div className="space-y-6 overflow-hidden p-4 lg:p-6">
       {/* Top Cards */}
@@ -255,7 +247,7 @@ export default function Enterprises() {
           </thead>
 
           <tbody>
-            {paginatedEnterprises.map((enterprise, index) => (
+            {filteredEnterprises.map((enterprise, index) => (
               <motion.tr
                 key={enterprise._id}
                 initial={{ opacity: 0, x: -20 }}
@@ -341,7 +333,7 @@ export default function Enterprises() {
 
       {/* Mobile Cards */}
       <div className="grid gap-4 xl:hidden">
-        {paginatedEnterprises.map((enterprise, index) => (
+        {filteredEnterprises.map((enterprise, index) => (
           <motion.div
             key={enterprise._id}
             initial={{ opacity: 0, y: 25 }}

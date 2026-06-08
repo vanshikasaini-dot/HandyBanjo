@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
   Users,
   Wrench,
   IndianRupee,
@@ -9,6 +18,7 @@ import {
   Building2,
   Star,
 } from "lucide-react";
+import UserGrowthChart from "./Chart";
 
 import { getAllDashboard } from "../Apis/dashboard";
 
@@ -49,6 +59,7 @@ export default function Dashboard() {
   const [services, setServices] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,11 +68,38 @@ export default function Dashboard() {
 
         const res = await getAllDashboard();
         console.log("Dashboard API:", res);
-        setUsers(res?.users || res?.data?.users || {});
 
+        setUsers(res?.users || res?.data?.users || {});
         setBookings(res?.bookings || []);
         setServices(res?.services || []);
         setReviews(res?.reviews || []);
+
+        // ✅ GRAPH YAHAN BANAO
+        const graphData = [
+          {
+            name: "Users",
+            users: res?.users?.totalUsers || 0,
+          },
+          {
+            name: "Helpers",
+            users: res?.users?.totalHelpers || 0,
+          },
+          {
+            name: "Customers",
+            users: res?.users?.totalCustomers || 0,
+          },
+          {
+            name: "Pros",
+            users: res?.users?.totalPros || 0,
+          },
+          {
+            name: "Enterprise",
+            users: res?.users?.totalEnterprises || 0,
+          },
+        ];
+
+        // ✅ SET STATE
+        setChartData(graphData);
       } catch (err) {
         console.log("Dashboard API error:", err);
       } finally {
@@ -111,25 +149,35 @@ export default function Dashboard() {
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
-        {stats.map((item, index) => (
-          <div
-            key={index}
-            className="bg-red-400 text-white rounded-2xl p-5 shadow-lg hover:-translate-y-1 transition"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-white/80">{item.title}</p>
-                <h2 className="text-3xl font-bold mt-2">
-                  <AnimatedValue end={item.value} />
-                </h2>
-              </div>
+      {/* <div className="bg-white rounded-2xl shadow p-5 mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">User Growth Trends</h2>
 
-              <div className="bg-white/20 p-3 rounded-xl">{item.icon}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+          <select className="border px-3 py-1 rounded-lg text-sm">
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+          </select>
+        </div>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+
+            <Area
+              type="monotone"
+              dataKey="users"
+              stroke="#ff4d4f"
+              fill="#ff4d4f"
+              fillOpacity={0.2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div> */}
+
+      <UserGrowthChart/>
 
       {/* MIDDLE SECTION */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">

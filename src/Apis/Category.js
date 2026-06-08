@@ -1,10 +1,8 @@
 import axiosInstance from "./Interceptor/axiosInstance";
 
 export const getAllCategories = async () => {
-  const response = await axiosInstance.get("/category/all");
-  return response.data;
+  return axiosInstance.get(`/category/all`);
 };
-
 export const createCategory = async (data) => {
   const response = await axiosInstance.post("/category/add", data, {
     headers: {
@@ -20,8 +18,6 @@ export const deleteCategory = async (id) => {
   return response.data;
 };
 
-
-
 export const updateCategory = async (id, formData) => {
   const response = await axiosInstance.put(
     `/category/update/${id}`,
@@ -35,3 +31,4 @@ export const updateCategory = async (id, formData) => {
 
   return response.data;
 };
+
